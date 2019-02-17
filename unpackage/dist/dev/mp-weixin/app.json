@@ -1,0 +1,54 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/main/main",
+    "pages/login/login",
+    "pages/reg/reg",
+    "pages/pwd/pwd",
+    "pages/user/user"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarBackgroundColor": "#0faeff",
+    "backgroundColor": "#fbf9fe"
+  },
+  "usingComponents": {},
+  "tabBar": {
+    "color": "#7a7e83",
+    "selectedColor": "#0faeff",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/img/index/home.png",
+        "selectedIconPath": "static/img/index/homeHL.png"
+      },
+      {
+        "pagePath": "pages/main/main",
+        "text": "收入",
+        "iconPath": "static/img/index/receipts.png",
+        "selectedIconPath": "static/img/index/receiptsHL.png"
+      },
+      {
+        "pagePath": "pages/main/main",
+        "text": "支出",
+        "iconPath": "static/img/index/expend.png",
+        "selectedIconPath": "static/img/index/expendHL.png"
+      },
+      {
+        "pagePath": "pages/main/main",
+        "text": "更多",
+        "iconPath": "static/img/index/more.png",
+        "selectedIconPath": "static/img/index/moreHL.png"
+      },
+      {
+        "pagePath": "pages/user/user",
+        "text": "我的",
+        "iconPath": "static/img/index/user.png",
+        "selectedIconPath": "static/img/index/userHL.png"
+      }
+    ]
+  }
+}

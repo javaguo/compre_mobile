@@ -1,0 +1,81 @@
+{
+    "pages": [ //pages数组中第一项表示应用启动页,
+        {
+            "path": "pages/index/index",
+            "style": {
+                "navigationBarTitleText": "概览"
+            }
+        },{
+            "path": "pages/main/main",
+            "style": {
+                "navigationBarTitleText": "登录模板"
+            }
+        }, {
+            "path": "pages/login/login",
+            "style": {
+                "navigationBarTitleText": "登录"
+            }
+        }, {
+            "path": "pages/reg/reg",
+            "style": {
+                "navigationBarTitleText": "注册"
+            }
+        }, {
+            "path": "pages/pwd/pwd",
+            "style": {
+                "navigationBarTitleText": "找回密码"
+            }
+        }, {
+            "path": "pages/user/user",
+            "style": {
+                "navigationBarTitleText": "我的"
+            }
+        }
+    ],
+    "tabBar": {
+        "color": "#7a7e83",
+        "selectedColor": "#0faeff",
+        "backgroundColor": "#ffffff",
+        "list": [{
+            "pagePath": "pages/index/index",
+            "text": "首页",
+            "iconPath": "static/img/index/home.png",
+            "selectedIconPath": "static/img/index/homeHL.png"
+        },{
+            "pagePath": "pages/main/main",
+            "text": "收入",
+            "iconPath": "static/img/index/receipts.png",
+            "selectedIconPath": "static/img/index/receiptsHL.png"
+        },{
+            "pagePath": "pages/main/main",
+            "text": "支出",
+            "iconPath": "static/img/index/expend.png",
+            "selectedIconPath": "static/img/index/expendHL.png"
+        },{
+            "pagePath": "pages/main/main",
+            "text": "更多",
+            "iconPath": "static/img/index/more.png",
+            "selectedIconPath": "static/img/index/moreHL.png"
+        }, {
+            "pagePath": "pages/user/user",
+            "text": "我的",
+            "iconPath": "static/img/index/user.png",
+            "selectedIconPath": "static/img/index/userHL.png"
+        }]
+    },
+    "globalStyle": {
+        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#0faeff",
+        "backgroundColor": "#fbf9fe"
+    },
+	"condition" : { //模式配置，仅开发期间生效
+		"current": 0, //当前激活的模式(list 的索引项)
+		"list": [
+			{
+				"name": "", //模式名称
+				"path": "", //启动页面，必选
+				"query": "" //启动参数，在页面的onLoad函数里面得到
+			}
+		]
+	}
+}
