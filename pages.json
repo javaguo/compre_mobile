@@ -6,6 +6,11 @@
                 "navigationBarTitleText": "概览"
             }
         },{
+            "path": "pages/finance/receipts/receipts-list",
+            "style": {
+                "navigationBarTitleText": "收入列表"
+            }
+        },{
             "path": "pages/main/main",
             "style": {
                 "navigationBarTitleText": "登录模板"
@@ -42,7 +47,7 @@
             "iconPath": "static/img/index/home.png",
             "selectedIconPath": "static/img/index/homeHL.png"
         },{
-            "pagePath": "pages/main/main",
+            "pagePath": "pages/finance/receipts/receipts-list",
             "text": "收入",
             "iconPath": "static/img/index/receipts.png",
             "selectedIconPath": "static/img/index/receiptsHL.png"
