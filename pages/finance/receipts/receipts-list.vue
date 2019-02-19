@@ -1,20 +1,21 @@
 <template>
-    <view class="page">
+    <view class="com_page">
         <page-head :title="title"></page-head>
-        <view class="uni-list">
+		<view class="uni-flex uni-row com_list" >
+		<view class="" style="width: 200upx;">
+			<picker mode="date" :value="date" :start="startDate" :end="endDate" @change="bindDateChange">
+				<view class="uni-input">{{date}}</view>
+			</picker>
+		</view>
+		</view>
+        <view style="width: 100%;">
             <block v-for="(item,index) in lists" :key="index">
-                <view class="uni-list-cell" hover-class="uni-list-cell-hover">
-                    <view class="uni-triplex-row">
-                        <view class="uni-triplex-left">
-                            <text class="uni-title uni-ellipsis">2019-02-18</text>
-                            <text class="uni-text">列表副标题</text>
-                            <text class="uni-text-small uni-ellipsis">列表内容文字,列表内容文字,列表内容文字,列表内容文字</text>
-                        </view>
-                        <view class="uni-triplex-right">
-                            <text class="uni-h5">892.20</text>
-                        </view>
+                    <view class="uni-flex uni-row com_list" >
+						<view class="uni-title list_date">2019-02-18</view>
+						<view class="uni-title uni-ellipsis list_type1">餐饮支出餐饮支出餐饮支出</view>
+						<view class="uni-title uni-ellipsis list_type2">三餐三餐三餐三餐三餐三餐三餐</view>
+						<view class="uni-title list_sum">99892.20</view>
                     </view>
-                </view>
             </block>
         </view>
     </view>
@@ -23,11 +24,45 @@
 <script>
     export default {
         data() {
+			const currentDate = this.getDate({
+				format: true
+			});
             return {
                 title: '收入列表',
+				date: currentDate,
                 lists: []
             }
         },
+		computed: {
+			startDate() {
+				return this.getDate('start');
+			},
+			endDate() {
+				return this.getDate('end');
+			}
+		},
+		methods: {
+			bindDateChange: function(e) {
+				this.date = e.target.value
+			},
+			getDate(type) {
+				const date = new Date();
+		
+				let year = date.getFullYear();
+				let month = date.getMonth() + 1;
+				let day = date.getDate();
+		
+				if (type === 'start') {
+					year = year - 60;
+				} else if (type === 'end') {
+					year = year + 2;
+				}
+				month = month > 9 ? month : '0' + month;;
+				day = day > 9 ? day : '0' + day;
+		
+				return `${year}-${month}-${day}`;
+			}
+		},
         onLoad() {
             let list = [];
             for (let i = 0; i < 5; i++) {
@@ -39,4 +74,17 @@
 </script>
 
 <style>
+.list_date{
+	width: 180upx;
+}	
+.list_type1{
+	width: 180upx;
+}
+.list_type2{
+	width: 180upx;
+}
+.list_sum{
+	flex: 1;
+	text-align: right;
+}
 </style>

@@ -16,9 +16,6 @@ progress, checkbox-group{
 form {
 	width: 100%;
 }
-.uni_page{
-		background-color: #F2F2F2;
-}
 .uni-flex {
 	display: flex;
 	flex-direction: row;

@@ -1,5 +1,5 @@
 <template>
-	<view class="uni_page">
+	<view class="com_page">
 		<page-head :title="title"></page-head>
 		<view class="uni-padding-wrap uni-common-mt">
 			<view class="uni-flex uni-row">
