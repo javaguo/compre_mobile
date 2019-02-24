@@ -8,13 +8,19 @@
 			</picker>
 		</view>
 		</view>
-        <view style="width: 100%;">
+        <view style="width: 100%;margin-right: 80upx;">
             <block v-for="(item,index) in lists" :key="index">
-                    <view class="uni-flex uni-row com_list" >
-						<view class="uni-title list_date">2019-02-18</view>
-						<view class="uni-title uni-ellipsis list_type1">餐饮支出餐饮支出餐饮支出</view>
-						<view class="uni-title uni-ellipsis list_type2">三餐三餐三餐三餐三餐三餐三餐</view>
-						<view class="uni-title list_sum">99892.20</view>
+                    <view class="com_row_list com_list" >
+						<view class="com_row" >
+							<view class="uni-title list_date">2019-02-18</view>
+							<view class="uni-title uni-ellipsis list_type1">餐饮支出餐饮支出餐饮支出</view>
+							<view class="uni-title uni-ellipsis list_type2">三餐三餐三餐三餐三餐三餐三餐</view>
+							<view class="uni-title list_sum">a99892.20a</view>
+						</view>
+						<view class="com_row">
+							<view class="uni-title list_date">备注：</view>
+							<view class="uni-title uni-ellipsis" style="flex: 1;">自动占满余量自动占满余量自动占满余量自动占满余量自动占满余量自动占满余量自动占满余量自动占满余量自动占满余量自动占满余量自动占满余量</view>
+						</view>	
                     </view>
             </block>
         </view>

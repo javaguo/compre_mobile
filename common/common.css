@@ -1,0 +1,23 @@
+.com_page{
+	width: 100%;
+	background-color: #F7F7F7;
+}
+.com_list{
+	padding: 8upx 20upx;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-color: #E2E2E2;
+	text-align: center;
+}
+.com_row_list {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+}
+
+.com_row {
+	padding: 0upx 20upx;
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+}
