@@ -7,13 +7,13 @@
 			</view>
 			<view class="uni-flex uni-row">
 				<view class="text text_label" >收入：</view>
-				<view class="text text_value" >123456789.0</view>
+				<view class="text text_value uni-ellipsis" >123456789.0</view>
 				<view class="text text_label" >支出：</view>
-				<view class="text text_value" >123456789.0</view>
+				<view class="text text_value uni-ellipsis" >123456789.0</view>
 			</view>
 			<view class="uni-flex uni-row">
 				<view class="text text_label" >差额：</view>
-				<view class="text text_value" >123456789.0</view>
+				<view class="text text_value uni-ellipsis" >123456789.0</view>
 			</view>
 			
 			<view class="uni-flex uni-row">
@@ -21,13 +21,13 @@
 			</view>
 			<view class="uni-flex uni-row">
 				<view class="text text_label" >收入：</view>
-				<view class="text text_value" >2</view>
+				<view class="text text_value uni-ellipsis" >2</view>
 				<view class="text text_label" >支出：</view>
-				<view class="text text_value" >1</view>
+				<view class="text text_value uni-ellipsis" >1</view>
 			</view>
 			<view class="uni-flex uni-row">
 				<view class="text text_label" >差额：</view>
-				<view class="text text_value" >123456789.0</view>
+				<view class="text text_value uni-ellipsis" >123456789.0</view>
 			</view>
 			
 			<view class="uni-flex uni-row">
@@ -35,13 +35,13 @@
 			</view>
 			<view class="uni-flex uni-row">
 				<view class="text text_label" >收入：</view>
-				<view class="text text_value" >123456789.00</view>
+				<view class="text text_value uni-ellipsis" >123456789.00</view>
 				<view class="text text_label" >支出：</view>
-				<view class="text text_value" >1</view>
+				<view class="text text_value uni-ellipsis" >1</view>
 			</view>
 			<view class="uni-flex uni-row">
 				<view class="text text_label" >差额：</view>
-				<view class="text text_value" >123456789.0</view>
+				<view class="text text_value uni-ellipsis" >123456789.0</view>
 			</view>
 			
 			<view class="uni-flex uni-row">
@@ -49,13 +49,13 @@
 			</view>
 			<view class="uni-flex uni-row">
 				<view class="text text_label" >借入：</view>
-				<view class="text text_value" ></view>
+				<view class="text text_value uni-ellipsis" ></view>
 				<view class="text text_label" >借出：</view>
-				<view class="text text_value" >123456789.0</view>
+				<view class="text text_value uni-ellipsis" >123456789.0</view>
 			</view>
 			<view class="uni-flex uni-row">
 				<view class="text text_label" >差额：</view>
-				<view class="text text_value" >123456789.0</view>
+				<view class="text text_value uni-ellipsis" >123456789.0</view>
 			</view>
 		</view>
 	</view>
@@ -71,14 +71,15 @@
 </script>
 
 <style>
-	
 	.text_group_title{
 		margin:5upx 0upx;
 		padding: 0 10upx;
 		height: 70upx;
 		line-height: 70upx;
-		color: #666666;
-		font-size: 30upx;
+		color: #8a8a8a;
+		font-size: 35upx;
+		flex: 1;
+		text-align: left;
 	}
 	.text{
 		margin:0upx 0upx;
@@ -86,18 +87,16 @@
 		background-color: #FFFFFF;
 		height: 60upx;
 		line-height: 60upx;
-		color: #777;
-		font-size: 30upx;
+		color: #8a8a8a;
+		font-size: 35upx;
+		text-align: left;
 	}
 	.text_label{
-		color: #444;
-		text-align: left;
-		font-size: 26upx;
+		width: 100upx;
 	}
 	.text_value{
-		text-align: left;
-		color: #222;
-		font-weight: bold;
 		flex: 1;
+		color: #111;
+		font-size: 38upx;
 	}
 </style>
