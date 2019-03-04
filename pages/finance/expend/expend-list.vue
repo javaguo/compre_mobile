@@ -3,11 +3,11 @@
         <page-head :title="title"></page-head>
 		<view class="com_form com_form_bottom" >
 			<view class="com_form_row">
-				<picker mode="date" :value="date" :start="startDate" :end="endDate" @change="bindDateChange">
-					<input class="com_form_input com_form_date" :value="date" placeholder="日期" />
+				<picker mode="date" name="expDate" :value="expDate"  @change="bindDateChange($event,'expDate')" @cancel="cancelDate($event,'expDate')">
+					<view class="com_form_input com_form_date" >{{expDate}}</view>
 				</picker>
 				
-				<input class="com_form_input com_form_type" :value="pickerText" @click="showMulLinkageTwoPicker" placeholder="收入类型" />
+				<view class="com_form_input com_form_type" @click="showMulLinkageTwoPicker">{{pickerText}}</view>
 				<mpvue-picker :themeColor="themeColor" ref="mpvuePicker" :mode="mode" :deepLength="deepLength" :pickerValueDefault="pickerValueDefault"
 				@onConfirm="onConfirm" @onCancel="onCancel" :pickerValueArray="pickerValueArray"></mpvue-picker>
 				
@@ -21,12 +21,12 @@
 		
 		<view class="com_form" >
 			<view class="com_form_row">
-				<picker mode="date" :value="date" :start="startDate" :end="endDate" @change="bindDateChange">
-					<input class="com_form_input com_form_date" :value="date" placeholder="开始日期" />
+				<picker mode="date" name="expDateStart" :value="expDateStart"  @change="bindDateChange($event,'expDateStart')" >
+					<view class="com_form_input com_form_date" >{{expDateStart}}</view>
 				</picker>
 				<view class="com_form_text">-</view>
-				<picker mode="date" :value="date" :start="startDate" :end="endDate" @change="bindDateChange">
-					<input class="com_form_input com_form_date" :value="date" placeholder="结束日期" />
+				<picker mode="date" name="expDateEnd" :value="expDateEnd"  @change="bindDateChange($event,'expDateEnd')" >
+					<view class="com_form_input com_form_date" >{{expDateEnd}}</view>
 				</picker>
 				
 				<input class="com_form_input com_form_type" :value="pickerText" @click="showMulLinkageTwoPicker" placeholder="收入类型" />
@@ -75,6 +75,7 @@
 <script>
 	import mpvuePicker from '../../../components/mpvue-picker/mpvuePicker.vue';
 	import cityData from '../../../common/city.data.js';
+
 	
     export default {
 		components: {
@@ -84,9 +85,12 @@
 			const currentDate = this.getDate({
 				format: true
 			});
+			
             return {
                 title: '收入列表',
-				date: currentDate,
+				expDate: currentDate,
+				expDateStart: currentDate,
+				expDateEnd: currentDate,
 				layout:{
 					form:{show: true},
 					list:{show: false}
@@ -115,8 +119,22 @@
 					this.layout.form.show = !this.layout.form.show;
 				}
 			},
-			bindDateChange: function(e) {
-				this.date = e.target.value
+			bindDateChange: function(e,id) {
+				if ("expDate"==id){
+					this.expDate = e.target.value;
+				}else if ("expDateStart"==id){
+					this.expDateStart = e.target.value;
+				}else if ("expDateEnd"==id){
+					this.expDateEnd = e.target.value;
+				}
+			},
+			cancelDate:function (e,id){// 设计为时间不能取消
+				/* if ("expDate"==id){
+					this.expDateTip = true;
+					this.expDate = this.datePlaceholder;
+				}else{
+					
+				} */
 			},
 			getDate(type) {
 				const date = new Date();

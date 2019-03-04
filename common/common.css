@@ -1,6 +1,6 @@
 .com_page{
 	width: 100%;
-	background-color: #F5F5F5;
+	background-color: #E5E5E5;
 }
 .com_layout_column{
 	display: flex;
@@ -112,9 +112,13 @@
 	text-align: center;
 }
 
+.com_placeholder{
+	color: #DDDDDD;
+}
+
 .com_form_input{
-	height: 40upx;
-	line-height:40upx;
+	height: 55upx;
+	line-height:55upx;
 	font-size:35upx;
 	background:#FEFEFE;
 	flex: 1;
@@ -123,6 +127,8 @@
 	border-bottom-width: 2upx;
 	border-bottom-color: #aaa; */
 	padding: 5upx 5upx;
+	text-align: left;
+	vertical-align: middle;
 }
 
 .com_form_date{
