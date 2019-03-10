@@ -2,21 +2,28 @@
     <view class="com_page com_layout_column">
         <page-head :title="title"></page-head>
 		<view class="com_form com_form_bottom" >
+			<form>
 			<view class="com_form_row">
 				<picker mode="date" name="expDate" :value="expDate"  @change="bindDateChange($event,'expDate')" @cancel="cancelDate($event,'expDate')">
 					<view class="com_form_input com_form_date" >{{expDate}}</view>
 				</picker>
 				
-				<view class="com_form_input com_form_type" @click="showMulLinkageTwoPicker">{{pickerText}}</view>
-				<mpvue-picker :themeColor="themeColor" ref="mpvuePicker" :mode="mode" :deepLength="deepLength" :pickerValueDefault="pickerValueDefault"
-				@onConfirm="onConfirm" @onCancel="onCancel" :pickerValueArray="pickerValueArray"></mpvue-picker>
+				<view class="com_form_input com_form_type" :class="typeAddTipClass ? 'com_placeholder' : ''"
+					  @click="selectType($event,'typeAdd')">{{typeAddText}}</view>
+				<mpvue-picker :themeColor="themeColor" ref="typeAddPicker" :mode="typeMode" :deepLength="typeDeepLength" 
+						:pickerValueDefault="typeAddSelectedIndex"  :pickerValueArray="typeValueArray"
+						@onConfirm="typeOnConfirm($event,'typeAdd')" @onCancel="typeOnCancel($event,'typeAdd')" >
+				</mpvue-picker>
 				
-				<input class="com_form_input com_form_sum" type="digit" placeholder="金额" />
+				<input class="com_form_input com_form_sum" placeholder-class="com_placeholder" type="digit" 
+					:maxlength="sumMaxLength" placeholder="金额" :value="sumAdd"/>
 			 </view>
 			 <view class="com_form_row">
-			 	<input class="com_form_input com_form_remark" placeholder="备注" />
-				<button class="com_form_save">保存</button>
+			 	<input class="com_form_input com_form_remark" placeholder-class="com_placeholder" placeholder="备注" :maxlength="remarkMaxLength"
+					:value="remark"/>
+				<button class="com_form_save" @click="saveExpend">保存</button>
 			  </view>
+			  </form>
 		</view>
 		
 		<view class="com_form" >
@@ -29,15 +36,22 @@
 					<view class="com_form_input com_form_date" >{{expDateEnd}}</view>
 				</picker>
 				
-				<input class="com_form_input com_form_type" :value="pickerText" @click="showMulLinkageTwoPicker" placeholder="收入类型" />
-				<mpvue-picker :themeColor="themeColor" ref="mpvuePicker" :mode="mode" :deepLength="deepLength" :pickerValueDefault="pickerValueDefault"
-				@onConfirm="onConfirm" @onCancel="onCancel" :pickerValueArray="pickerValueArray"></mpvue-picker>
+				<view class="com_form_input com_form_type" :class="typeQueryTipClass ? 'com_placeholder' : ''"
+					@click="selectType($event,'typeQuery')">{{typeQueryText}}</view>
+				<mpvue-picker :themeColor="themeColor" ref="typeQueryPicker" :mode="typeMode" :deepLength="typeDeepLength" 
+						:pickerValueDefault="typeQuerySelectedIndex"  :pickerValueArray="typeValueArray"
+						@onConfirm="typeOnConfirm($event,'typeQuery')" @onCancel="typeOnCancel($event,'typeQuery')" >
+				</mpvue-picker>
+				
 			 </view>
 			 <view class="com_form_row">
-			 	<input class="com_form_input com_form_sum_q" type="digit" placeholder="最小金额" />
+			 	<input class="com_form_input com_form_sum_q" placeholder-class="com_placeholder" type="digit" :maxlength="sumMaxLength" placeholder="最小金额"
+					:value="sumStart" @blur="sumBlur($event,'sumMin')"/>
 				<view class="com_form_text">-</view>
-			 	<input class="com_form_input com_form_sum_q" type="digit" placeholder="最大金额" />
-			 	<input class="com_form_input com_form_remark" placeholder="备注" />
+			 	<input class="com_form_input com_form_sum_q" placeholder-class="com_placeholder" type="digit" :maxlength="sumMaxLength" placeholder="最大金额" 
+					:value="sumEnd" @blur="sumBlur($event,'sumMax')"/>
+			 	<input class="com_form_input com_form_remark" placeholder-class="com_placeholder" placeholder="备注" :maxlength="remarkMaxLength" 
+					:value="remarkQuery"/>
 				<button class="com_form_save">查询</button>
 			  </view>
 		</view>
@@ -75,7 +89,6 @@
 <script>
 	import mpvuePicker from '../../../components/mpvue-picker/mpvuePicker.vue';
 	import cityData from '../../../common/city.data.js';
-
 	
     export default {
 		components: {
@@ -85,24 +98,49 @@
 			const currentDate = this.getDate({
 				format: true
 			});
-			
+			const constTypeTip = "支出类型";// 只在下面的return块里使用
+			const constSumMinVal = 0;
+			const constSumMaxVal = 100000000;
             return {
+				/* pageConst:{
+					typeTip:'支出类型'
+				}, */
                 title: '收入列表',
-				expDate: currentDate,
-				expDateStart: currentDate,
-				expDateEnd: currentDate,
 				layout:{
 					form:{show: true},
 					list:{show: false}
 				},
-                lists: [],
-				mulLinkageTwoPicker: cityData,
+				lists: [],
+				expDate: currentDate,
+				expDateStart: currentDate,
+				expDateEnd: currentDate,
+				// mulLinkageTwoPicker: cityData,
 				themeColor: '#007AFF',
-				mode: '',
-				deepLength: 1,
-				pickerValueDefault: [0],
-				pickerValueArray: [],
-				pickerText: ''
+				// pickerValueDefault: [0],
+				// pickerValueArray: [],
+				typeValueArray: cityData,
+				typeMode: 'multiLinkageSelector',
+				typeDeepLength: 2,
+				typeTip:constTypeTip,
+				typeAddSelectedIndex: [0, 0],
+				typeQuerySelectedIndex: [0, 0],
+				typeAddText: constTypeTip,
+				typeQueryText: constTypeTip,
+				typeAddValue: '',
+				typeQueryValue: '',
+				typeAddTipClass:true,
+				typeQueryTipClass:true,
+				sumAdd:'',
+				sumStart:'',
+				sumEnd:'',
+				sumMaxLength:11,
+				sumMinVal:constSumMinVal,
+				sumMaxVal:constSumMaxVal,
+				remark: '',
+				remarkQuery: '',
+				remarkMaxLength:100,
+				
+				duration:3000
             }
         },
 		computed: {
@@ -114,17 +152,19 @@
 			}
 		},
 		methods: {
+			// 控制面板收缩
 			trigerCollapse(layout) {
 			    if (layout=="form"){
 					this.layout.form.show = !this.layout.form.show;
 				}
 			},
-			bindDateChange: function(e,id) {
-				if ("expDate"==id){
+			// 日期相关方法开始
+			bindDateChange: function(e,elementId) {
+				if ("expDate"==elementId){
 					this.expDate = e.target.value;
-				}else if ("expDateStart"==id){
+				}else if ("expDateStart"==elementId){
 					this.expDateStart = e.target.value;
-				}else if ("expDateEnd"==id){
+				}else if ("expDateEnd"==elementId){
 					this.expDateEnd = e.target.value;
 				}
 			},
@@ -153,29 +193,106 @@
 		
 				return `${year}-${month}-${day}`;
 			},
-			// 二级联动选择
-			showMulLinkageTwoPicker() {
-				this.pickerValueArray = this.mulLinkageTwoPicker
-				this.mode = 'multiLinkageSelector'
-				this.deepLength = 2
-				this.pickerValueDefault = [0, 0]
-				this.$refs.mpvuePicker.show()
+			// 日期相关方法结束
+			// 二级联动选择支出类型
+			selectType(e,ref) {
+				// this.pickerValueArray = this.mulLinkageTwoPicker
+				// this.mode = 'multiLinkageSelector'
+				// this.deepLength = 2
+				// this.pickerValueDefault = [0, 0]
+				if ("typeAdd"==ref){
+					this.$refs.typeAddPicker.show();
+					
+				}else if ("typeQuery"==ref){
+					this.$refs.typeQueryPicker.show();
+				}
 			},
-			onConfirm(e) {
-				this.pickerText = JSON.stringify(e)
+			typeOnConfirm(e,elementId) {
+				let selectedObj = cityData[e.index[0]].children[e.index[1]];
+				let selectedVal = selectedObj.value;
+				let selectedLabel = selectedObj.label;
+				
+				console.log("JSON.stringify(e)："+JSON.stringify(e));
+				if ("typeAdd"==elementId){
+					console.log("typeAdd："+JSON.stringify(e));
+					// this.typeAddText = JSON.stringify(e);
+					this.typeAddValue = selectedVal;
+					this.typeAddText = selectedLabel;
+					this.typeAddTipClass = false;
+				}else if ("typeQuery"==elementId){
+					console.log("typeQuery："+JSON.stringify(e));
+					// this.typeQueryText = JSON.stringify(e);
+					
+					console.log("typeQueryaaa："+selectedObj.label);
+					// cityData[e.index[0]][e.index[1]];
+					this.typeQueryValue = selectedVal;
+					this.typeQueryText = selectedLabel;
+					this.typeQueryTipClass = false;
+				}
 			},
-			onCancel(e) {
+			typeOnCancel(e,elementId) {
+				if ("typeAdd"==elementId){
+					this.typeAddValue = '';
+					this.typeAddText = this.typeTip;
+					this.typeAddTipClass = true;
+				}else if ("typeQuery"==elementId){
+					this.typeQueryValue = '';
+					this.typeQueryText = this.typeTip;
+					this.typeQueryTipClass = true;
+				}
+			},
+			sumBlur(e,eleId){
+				// console.log("sumBlur："+eleId);
+			},
+			saveExpend(){
+				console.log("this.expDate："+this.expDate);
+				if ( this.expDate==null || this.expDate=='' || this.expDate.length==0){
+					uni.showToast({title:'请选择支出日期！',icon:'none',duration:this.duration});
+					return;
+				}
+				console.log("this.typeAddValue："+this.typeAddValue);
+				if ( this.typeAddValue.length==0){
+					uni.showToast({title:'请选择支出类型！',icon:'none',duration:this.duration});
+					return;
+				}
+				console.log("this.sumAdd："+this.sumAdd);
+				console.log("this.remark："+this.remark);
+				let tempURL = "http://localhost:8101/compre/expendType/loadTreeData.do?fieldMap=id:id,text:expend_type_name,parentId:fk_parent_id&treeRootVal=-1&treeFlag=expendType&resType=map&multiSelect=true&node=root";
+				let reqObj = {url:tempURL,data:'',dataType:'',
+					success: (res) => {
+						console.log("success："+res.data);
+					},fail: (res) => {
+						console.log("fail："+res.data);
+					},complete: (res) => {
+						console.log("complete："+res.data);
+					}};
+				uni.request(reqObj);
+				if (this.sumAdd==null || this.sumAdd==''){
+					uni.showToast({title:'请填写支出金额！',icon:'none',duration:this.duration});
+					return;
+				}
+				if (this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
+					uni.showToast({title:'支出金额应大于'+this.sumMinVal+'且小于'+this.sumMaxVal,icon:'none',duration:this.duration});
+					return;
+				}
 			}
 		},
 		onBackPress() {
-			if (this.$refs.mpvuePicker.showPicker) {
-				this.$refs.mpvuePicker.pickerCancel();
+			if (this.$refs.typeAddPicker.showPicker) {
+				this.$refs.typeAddPicker.pickerCancel();
+				return true;
+			}
+			if (this.$refs.typeQueryPicker.showPicker) {
+				this.$refs.typeQueryPicker.pickerCancel();
 				return true;
 			}
 		},
 		onUnload() {
-			if (this.$refs.mpvuePicker.showPicker) {
-				this.$refs.mpvuePicker.pickerCancel()
+			if (this.$refs.typeAddPicker.showPicker) {
+				this.$refs.typeAddPicker.pickerCancel();
+			}
+			if (this.$refs.typeQueryPicker.showPicker) {
+				this.$refs.typeQueryPicker.pickerCancel();
 			}
 		},
         onLoad() {
