@@ -16,11 +16,11 @@
 				</mpvue-picker>
 				
 				<input class="com_form_input com_form_sum" placeholder-class="com_placeholder" type="digit" 
-					:maxlength="sumMaxLength" placeholder="金额" :value="sumAdd"/>
+					:maxlength="sumMaxLength" placeholder="金额"  v-model.trim="sumAdd"/>
 			 </view>
 			 <view class="com_form_row">
 			 	<input class="com_form_input com_form_remark" placeholder-class="com_placeholder" placeholder="备注" :maxlength="remarkMaxLength"
-					:value="remark"/>
+					v-model.trim="remark"/>
 				<button class="com_form_save" @click="saveExpend">保存</button>
 			  </view>
 			  </form>
@@ -46,12 +46,12 @@
 			 </view>
 			 <view class="com_form_row">
 			 	<input class="com_form_input com_form_sum_q" placeholder-class="com_placeholder" type="digit" :maxlength="sumMaxLength" placeholder="最小金额"
-					:value="sumStart" @blur="sumBlur($event,'sumMin')"/>
+					v-model.trim="sumStart" @blur="sumBlur($event,'sumMin')"/>
 				<view class="com_form_text">-</view>
 			 	<input class="com_form_input com_form_sum_q" placeholder-class="com_placeholder" type="digit" :maxlength="sumMaxLength" placeholder="最大金额" 
-					:value="sumEnd" @blur="sumBlur($event,'sumMax')"/>
+					v-model.trim="sumEnd" @blur="sumBlur($event,'sumMax')"/>
 			 	<input class="com_form_input com_form_remark" placeholder-class="com_placeholder" placeholder="备注" :maxlength="remarkMaxLength" 
-					:value="remarkQuery"/>
+					v-model.trim="remarkQuery"/>
 				<button class="com_form_save">查询</button>
 			  </view>
 		</view>
@@ -89,6 +89,7 @@
 <script>
 	import mpvuePicker from '../../../components/mpvue-picker/mpvuePicker.vue';
 	import cityData from '../../../common/city.data.js';
+	import {vSum} from '../../../resources/js/utils/regex.js';
 	
     export default {
 		components: {
@@ -130,12 +131,13 @@
 				typeQueryValue: '',
 				typeAddTipClass:true,
 				typeQueryTipClass:true,
-				sumAdd:'',
-				sumStart:'',
-				sumEnd:'',
 				sumMaxLength:11,
 				sumMinVal:constSumMinVal,
 				sumMaxVal:constSumMaxVal,
+				sumMaxValStr:'1亿',
+				sumAdd:'',
+				sumStart:'',
+				sumEnd:'',
 				remark: '',
 				remarkQuery: '',
 				remarkMaxLength:100,
@@ -196,6 +198,7 @@
 			// 日期相关方法结束
 			// 二级联动选择支出类型
 			selectType(e,ref) {
+				uni.hideKeyboard();
 				// this.pickerValueArray = this.mulLinkageTwoPicker
 				// this.mode = 'multiLinkageSelector'
 				// this.deepLength = 2
@@ -257,6 +260,22 @@
 				}
 				console.log("this.sumAdd："+this.sumAdd);
 				console.log("this.remark："+this.remark);
+				
+				if (this.sumAdd==null || this.sumAdd==''){
+					uni.showToast({title:'请填写支出金额！',icon:'none',duration:this.duration});
+					return;
+				}
+				if (!vSum(this.sumAdd) || this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
+					uni.showToast({title:'请填写正确的金额！支出金额应大于'+
+										this.sumMinVal+'且小于'+this.sumMaxValStr,
+									icon:'none',duration:this.duration+2000});
+					return;
+				}
+				/* if (this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
+					uni.showToast({title:'支出金额应大于'+this.sumMinVal+'且小于'+this.sumMaxValStr,icon:'none',duration:this.duration});
+					return;
+				} */
+				
 				let tempURL = "http://localhost:8101/compre/expendType/loadTreeData.do?fieldMap=id:id,text:expend_type_name,parentId:fk_parent_id&treeRootVal=-1&treeFlag=expendType&resType=map&multiSelect=true&node=root";
 				let reqObj = {url:tempURL,data:'',dataType:'',
 					success: (res) => {
@@ -267,14 +286,6 @@
 						console.log("complete："+res.data);
 					}};
 				uni.request(reqObj);
-				if (this.sumAdd==null || this.sumAdd==''){
-					uni.showToast({title:'请填写支出金额！',icon:'none',duration:this.duration});
-					return;
-				}
-				if (this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
-					uni.showToast({title:'支出金额应大于'+this.sumMinVal+'且小于'+this.sumMaxVal,icon:'none',duration:this.duration});
-					return;
-				}
 			}
 		},
 		onBackPress() {
