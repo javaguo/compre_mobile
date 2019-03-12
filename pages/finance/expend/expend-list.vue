@@ -89,7 +89,7 @@
 <script>
 	import mpvuePicker from '../../../components/mpvue-picker/mpvuePicker.vue';
 	import cityData from '../../../common/city.data.js';
-	import {vSum} from '../../../resources/js/utils/regex.js';
+	import {vSum} from '../../../resource/js/utils/regex.js';
 	
     export default {
 		components: {
