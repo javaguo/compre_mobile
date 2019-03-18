@@ -248,6 +248,31 @@
 				// console.log("sumBlur："+eleId);
 			},
 			saveExpend(){
+				// let tempURL = "http://localhost:8101/compre/expendType/loadTreeData.do?fieldMap=id:id,text:expend_type_name,parentId:fk_parent_id&treeRootVal=-1&treeFlag=expendType&resType=map&multiSelect=true&node=root";
+				let tempURL = "http://localhost:8101/login/login.do";
+				let reqObj = {url:tempURL,data:{userName : "zjg",password : "dc483e80a7a0bd9ef71d8cf973673924"},
+								dataType:'',
+					success: (res) => {
+						console.log("success："+JSON.stringify(res.data));
+						
+						let tempURL1 = "http://localhost:8101/m/exampleBeanMobile/loadTreeData.do?fieldMap=id:id,text:name,parentId:parent_id&treeRootVal=-1&treeFlag=district&resType=map&multiSelect=false";
+						let reqObj1 = {url:tempURL1,data:{token : "my-token-123456789abcdefg"},
+										dataType:'',
+							success: (res) => {
+								console.log("success1："+JSON.stringify(res.data));
+							},fail: (res) => {
+								console.log("fail1："+JSON.stringify(res.data));
+							},complete: (res) => {
+								console.log("complete1："+JSON.stringify(res.data));
+							}};
+						uni.request(reqObj1);
+					},fail: (res) => {
+						console.log("fail："+JSON.stringify(res.data));
+					},complete: (res) => {
+						console.log("complete："+JSON.stringify(res.data));
+					}};
+				uni.request(reqObj);
+				
 				console.log("this.expDate："+this.expDate);
 				if ( this.expDate==null || this.expDate=='' || this.expDate.length==0){
 					uni.showToast({title:'请选择支出日期！',icon:'none',duration:this.duration});
@@ -276,16 +301,7 @@
 					return;
 				} */
 				
-				let tempURL = "http://localhost:8101/compre/expendType/loadTreeData.do?fieldMap=id:id,text:expend_type_name,parentId:fk_parent_id&treeRootVal=-1&treeFlag=expendType&resType=map&multiSelect=true&node=root";
-				let reqObj = {url:tempURL,data:'',dataType:'',
-					success: (res) => {
-						console.log("success："+res.data);
-					},fail: (res) => {
-						console.log("fail："+res.data);
-					},complete: (res) => {
-						console.log("complete："+res.data);
-					}};
-				uni.request(reqObj);
+				
 			}
 		},
 		onBackPress() {
