@@ -1,0 +1,277 @@
+export default [{
+    value: '1',
+    label: '餐饮支出',
+    children: [{
+        value: "2",
+        label: "三餐"
+    }, {
+        value: "3",
+        label: "食物作料"
+    }, {
+        value: "4",
+        label: "水果"
+    }, {
+        value: "5",
+        label: "零食饮料"
+    }, {
+        value: "6",
+        label: "烟酒茶"
+    }]
+}, {
+    value: '19',
+    label: '交通支出',
+    children: [{
+        value: "20",
+        label: "公共交通"
+    }, {
+        value: "21",
+        label: "打的费"
+    }, {
+        value: "22",
+        label: "汽油费"
+    }, {
+        value: "23",
+        label: "汽车保养费"
+    }, {
+        value: "24",
+        label: "停车过路"
+    }, {
+        value: "25",
+        label: "年检保险"
+    }, {
+        value: "26",
+        label: "违章罚款"
+    }, {
+        value: "27",
+        label: "汽车修理"
+    }, {
+        value: "74",
+        label: "火车"
+    }, {
+        value: "85",
+        label: "汽车"
+    }]
+}, {
+    value: '33',
+    label: '居家支出',
+    children: [{
+        value: "34",
+        label: "房租"
+    }, {
+        value: "35",
+        label: "物业费"
+    }, {
+        value: "36",
+        label: "水费"
+    }, {
+        value: "37",
+        label: "电费"
+    }, {
+        value: "38",
+        label: "燃气费"
+    }, {
+        value: "39",
+        label: "卫生费"
+    }, {
+        value: "40",
+        label: "取暖费"
+    }, {
+        value: "41",
+        label: "厨房用具"
+    }, {
+        value: "42",
+        label: "电器"
+    }, {
+        value: "43",
+        label: "家具"
+    }, {
+        value: "75",
+        label: "修理维护"
+    }, {
+        value: "78",
+        label: "日用工具"
+    }, {
+        value: "87",
+        label: "其他"
+    }]
+}, {
+    value: '28',
+    label: '通信支出',
+    children: [{
+        value: "29",
+        label: "电话费"
+    }, {
+        value: "30",
+        label: "手机费"
+    }, {
+        value: "31",
+        label: "上网费"
+    }, {
+        value: "32",
+        label: "邮寄费"
+    }]
+}, {
+    value: '7',
+    label: '服装鞋帽',
+    children: [{
+        value: "8",
+        label: "衣服"
+    }, {
+        value: "9",
+        label: "鞋类"
+    }, {
+        value: "10",
+        label: "箱包饰品"
+    }]
+}, {
+    value: '11',
+    label: '日常用品',
+    children: [{
+        value: "12",
+        label: "个人用品"
+    }, {
+        value: "13",
+        label: "洗涤用品"
+    }, {
+        value: "14",
+        label: "其它日用"
+    }]
+}, {
+    value: '15',
+    label: '个人支出',
+    children: [{
+        value: "16",
+        label: "洗理费"
+    }, {
+        value: "17",
+        label: "化妆品"
+    }, {
+        value: "18",
+        label: "美容护肤"
+    }]
+}, {
+    value: '44',
+    label: '教育支出',
+    children: [{
+        value: "45",
+        label: "书籍杂志"
+    }, {
+        value: "46",
+        label: "考试费"
+    }, {
+        value: "47",
+        label: "培训费"
+    }, {
+        value: "48",
+        label: "学杂费"
+    }, {
+        value: "49",
+        label: "书本文具"
+    }]
+}, {
+    value: '50',
+    label: '文化娱乐',
+    children: [{
+        value: "51",
+        label: "休闲娱乐"
+    }, {
+        value: "52",
+        label: "旅游度假"
+    }, {
+        value: "53",
+        label: "博彩支出"
+    }, {
+        value: "54",
+        label: "数码电子"
+    }]
+}, {
+    value: '55',
+    label: '医疗保健',
+    children: [{
+        value: "56",
+        label: "药费"
+    }, {
+        value: "57",
+        label: "保健"
+    }, {
+        value: "58",
+        label: "住院"
+    }, {
+        value: "59",
+        label: "门诊"
+    }]
+}, {
+    value: '60',
+    label: '礼尚往来',
+    children: [{
+        value: "61",
+        label: "请客送礼"
+    }, {
+        value: "62",
+        label: "红白喜事"
+    }, {
+        value: "63",
+        label: "人情交际"
+    }, {
+        value: "64",
+        label: "捐款捐赠"
+    }, {
+        value: "79",
+        label: "红包"
+    }, {
+        value: "80",
+        label: "请客"
+    }, {
+        value: "81",
+        label: "送礼"
+    }]
+}, {
+    value: '65',
+    label: '抚养赡养',
+    children: [{
+        value: "66",
+        label: "孝敬长辈"
+    }]
+}, {
+    value: '67',
+    label: '保险投资',
+    children: [{
+        value: "68",
+        label: "社保支出"
+    }, {
+        value: "69",
+        label: "利息税"
+    }]
+}, {
+    value: '70',
+    label: '杂项支出',
+    children: [{
+        value: "71",
+        label: "其它支出"
+    }, {
+        value: "76",
+        label: "居家"
+    }]
+}, {
+    value: '72',
+    label: '购买投资',
+    children: [{
+        value: "86",
+        label: "购房"
+    }]
+}, {
+    value: '73',
+    label: '余额调整支出',
+    children: []
+}, {
+    value: '77',
+    label: '转出',
+    children: []
+}, {
+    value: '82',
+    label: '经营投资',
+    children: [{
+        value: "83",
+        label: "电子资料"
+    }]
+}]

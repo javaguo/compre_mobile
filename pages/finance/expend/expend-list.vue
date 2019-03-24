@@ -87,8 +87,10 @@
 </template>
 
 <script>
+	import service from '../../../service.js';
 	import mpvuePicker from '../../../components/mpvue-picker/mpvuePicker.vue';
 	import cityData from '../../../common/city.data.js';
+	import expendType from '../../../common/account_expend_type.js';
 	import {vSum} from '../../../resource/js/utils/regex.js';
 	
     export default {
@@ -119,7 +121,7 @@
 				themeColor: '#007AFF',
 				// pickerValueDefault: [0],
 				// pickerValueArray: [],
-				typeValueArray: cityData,
+				typeValueArray: expendType,
 				typeMode: 'multiLinkageSelector',
 				typeDeepLength: 2,
 				typeTip:constTypeTip,
@@ -211,11 +213,12 @@
 				}
 			},
 			typeOnConfirm(e,elementId) {
-				let selectedObj = cityData[e.index[0]].children[e.index[1]];
+				console.log("JSON.stringify(e)："+JSON.stringify(e));
+				let selectedObj = expendType[e.index[0]].children[e.index[1]];
 				let selectedVal = selectedObj.value;
 				let selectedLabel = selectedObj.label;
 				
-				console.log("JSON.stringify(e)："+JSON.stringify(e));
+				//console.log("JSON.stringify(e)："+JSON.stringify(e));
 				if ("typeAdd"==elementId){
 					console.log("typeAdd："+JSON.stringify(e));
 					// this.typeAddText = JSON.stringify(e);
@@ -249,14 +252,14 @@
 			},
 			saveExpend(){
 				// let tempURL = "http://localhost:8101/compre/expendType/loadTreeData.do?fieldMap=id:id,text:expend_type_name,parentId:fk_parent_id&treeRootVal=-1&treeFlag=expendType&resType=map&multiSelect=true&node=root";
-				let tempURL = "http://localhost:8101/login/login.do";
-				let reqObj = {url:tempURL,data:{userName : "zjg",password : "dc483e80a7a0bd9ef71d8cf973673924"},
+				/* let tempURL = "http://localhost:8101/login/login.do";
+				let reqObj = {url:tempURL,data:{loginSource:"M",loginName : "zjg",password : "dc483e80a7a0bd9ef71d8cf973673924"},
 								dataType:'',
 					success: (res) => {
 						console.log("success："+JSON.stringify(res.data));
 						
 						let tempURL1 = "http://localhost:8101/m/exampleBeanMobile/loadTreeData.do?fieldMap=id:id,text:name,parentId:parent_id&treeRootVal=-1&treeFlag=district&resType=map&multiSelect=false";
-						let reqObj1 = {url:tempURL1,data:{token : "my-token-123456789abcdefg"},
+						let reqObj1 = {url:tempURL1,data:{token : res.data.token,loginName : "zjg"},
 										dataType:'',
 							success: (res) => {
 								console.log("success1："+JSON.stringify(res.data));
@@ -271,36 +274,60 @@
 					},complete: (res) => {
 						console.log("complete："+JSON.stringify(res.data));
 					}};
-				uni.request(reqObj);
+				uni.request(reqObj); */
 				
-				console.log("this.expDate："+this.expDate);
+				/* console.log("this.expDate："+this.expDate); */
 				if ( this.expDate==null || this.expDate=='' || this.expDate.length==0){
 					uni.showToast({title:'请选择支出日期！',icon:'none',duration:this.duration});
 					return;
 				}
-				console.log("this.typeAddValue："+this.typeAddValue);
+				/* console.log("this.typeAddValue："+this.typeAddValue); */
 				if ( this.typeAddValue.length==0){
 					uni.showToast({title:'请选择支出类型！',icon:'none',duration:this.duration});
 					return;
 				}
-				console.log("this.sumAdd："+this.sumAdd);
-				console.log("this.remark："+this.remark);
+				/* console.log("this.sumAdd："+this.sumAdd);
+				console.log("this.remark："+this.remark); */
 				
 				if (this.sumAdd==null || this.sumAdd==''){
 					uni.showToast({title:'请填写支出金额！',icon:'none',duration:this.duration});
 					return;
 				}
-				if (!vSum(this.sumAdd) || this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
+				/* if (!vSum(this.sumAdd) || this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
+					uni.showToast({title:'请填写正确的金额！支出金额应大于'+
+										this.sumMinVal+'且小于'+this.sumMaxValStr,
+									icon:'none',duration:this.duration+2000});
+					return;
+				} */
+				if (this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
 					uni.showToast({title:'请填写正确的金额！支出金额应大于'+
 										this.sumMinVal+'且小于'+this.sumMaxValStr,
 									icon:'none',duration:this.duration+2000});
 					return;
 				}
-				/* if (this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
-					uni.showToast({title:'支出金额应大于'+this.sumMinVal+'且小于'+this.sumMaxValStr,icon:'none',duration:this.duration});
-					return;
-				} */
 				
+				// let tempURL = "http://localhost:8101/m/expend/save.do";// 开发环境
+				let tempURL = "http://39.104.162.221:8102/per/m/expend/save.do";// 测试环境
+				let reqObj = {url:tempURL,
+								data:{loginName : "zjg",token : service.getToken(),
+										expDate:this.expDate,fkExpendTypeId:this.typeAddValue,expSum:this.sumAdd,remark:this.remark},
+								dataType:'json',method:'POST',header: {'content-type': 'application/x-www-form-urlencoded'},
+					success: (res) => {
+						if (res.data.success){
+							uni.showToast({title:'保存成功！',icon:'none',duration:this.duration});
+						}else{
+							uni.showToast({title:'保存失败！'+JSON.stringify(res.data),icon:'none',duration:this.duration+500});
+						}
+						
+						/* console.log("success："+JSON.stringify(res.data)); */
+						
+					},fail: (res) => {
+						uni.showToast({title:'保存支出请求失败！'+JSON.stringify(res.data),icon:'none',duration:this.duration+500});
+						/* console.log("fail："+JSON.stringify(res.data)); */
+					},complete: (res) => {
+						/* console.log("complete："+JSON.stringify(res.data)); */
+					}};
+				uni.request(reqObj);
 				
 			}
 		},
@@ -323,6 +350,7 @@
 			}
 		},
         onLoad() {
+			service.login();
             let list = [];
             for (let i = 0; i < 10; i++) {
                 list.push(i)
@@ -332,6 +360,3 @@
     }
 </script>
 
-<style>
-
-</style>
