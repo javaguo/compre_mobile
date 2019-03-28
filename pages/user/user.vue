@@ -20,9 +20,11 @@
         methods: {
             ...mapMutations(['logout']),
             bindLogin() {
-                uni.navigateTo({
-                    url: '../login/login',
-                });
+				if (this.hasLogin) {
+				    uni.showToast({title:'您已登录！',icon:'none'});
+				}else{
+					this.toLoginPage();
+				}
             },
             bindLogout() {
                 this.logout();
@@ -34,6 +36,15 @@
                         url: '../login/login',
                     });
                 }
+            },
+			toLoginPage(){
+				uni.navigateTo({
+				    url: '../login/login'
+				});
+			}
+        },onLoad() {
+            if (!this.hasLogin) {
+                this.toLoginPage();
             }
         }
     }

@@ -1,3 +1,5 @@
+import config from './resource/js/app/config.js';
+
 // 管理账号信息
 const USERS_KEY = 'USERS_KEY';
 const STATE_KEY = 'STATE_KEY';
@@ -22,8 +24,7 @@ const addUser = function (userInfo) {
 }
 
 function login(){
-	// let tempURL = "http://localhost:8101/login/login.do";// 开发环境
-	let tempURL = "http://39.104.162.221:8102/per/login/login.do";// 测试环境
+	let tempURL = config.SERVER_URL+"login/login.do";
 	
 	let reqData = {loginSource:"M",loginName : "zjg",password : "c696360395cb2338d78f9682de683f7e"}; // 开发环境
 	// let reqData = {loginSource:"M",loginName : "zjg",password : "c696360395cb2338d78f9682de683f7e"};// 测试环境
@@ -61,6 +62,5 @@ export default {
     getUsers,
     addUser,
 	login,
-	getToken,
-	token
+	getToken
 }

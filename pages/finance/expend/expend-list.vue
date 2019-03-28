@@ -21,7 +21,7 @@
 			 <view class="com_form_row">
 			 	<input class="com_form_input com_form_remark" placeholder-class="com_placeholder" placeholder="备注" :maxlength="remarkMaxLength"
 					v-model.trim="remark"/>
-				<button class="com_form_save" @click="saveExpend">保存</button>
+				<button class="com_form_save" @click="save">保存</button>
 			  </view>
 			  </form>
 		</view>
@@ -52,28 +52,28 @@
 					v-model.trim="sumEnd" @blur="sumBlur($event,'sumMax')"/>
 			 	<input class="com_form_input com_form_remark" placeholder-class="com_placeholder" placeholder="备注" :maxlength="remarkMaxLength" 
 					v-model.trim="remarkQuery"/>
-				<button class="com_form_save">查询</button>
+				<button class="com_form_save" @click="loadList($event,'query')">查询</button>
 			  </view>
 		</view>
 		
         <view class="">
-			<scroll-view class="com_list_scroll" scroll-y="true">
+			<scroll-view class="com_list_scroll" scroll-y="true" @scrolltolower="loadMoreData">
             <block v-for="(item,index) in lists" :key="index">
                     <view class="com_list" >
 						<view class="com_list_row com_list_row_top" >
-							<view class="list_text list_date">2019-02-18</view>
-							<view class="list_text list_type1 uni-ellipsis">餐饮支出餐饮支出餐饮支出</view>
-							<view class="list_text list_type2 uni-ellipsis">三餐三餐三餐三餐三餐三餐三餐</view>
-							<view class="list_text list_sum uni-ellipsis">a3534399892.20a</view>
+							<view class="list_text list_date">{{item.expDate}}</view>
+							<view class="list_text list_type1 uni-ellipsis">{{item.expendParentTypeName}}</view>
+							<view class="list_text list_type2 uni-ellipsis">{{item.fkExpendTypeId}}</view>
+							<view class="list_text list_sum uni-ellipsis">{{item.expSum}}</view>
 						</view>
 						<view class="com_list_row">
 							<view class="list_text list_row2_column1">备注：</view>
-							<view class="list_text list_row2_column2 uni-ellipsis" ></view>
+							<view class="list_text list_row2_column2 uni-ellipsis" >{{item.remark}}</view>
 							<view class="list_icon">
 								<image class="list-icon_img" src="../../../static/img/common/editor32.png"></image>
 							</view>
 							<view class="list_icon">
-								<image class="list-icon_img" src="../../../static/img/common/delete32.png"></image>
+								<image class="list-icon_img" src="../../../static/img/common/delete32.png" @click="deleteData($event,item)"></image>
 							</view>
 							<view class="list_icon">
 								<image class="list-icon_img" src="../../../static/img/common/view32.png"></image>
@@ -87,11 +87,16 @@
 </template>
 
 <script>
+	import config from '../../../resource/js/app/config.js';
 	import service from '../../../service.js';
 	import mpvuePicker from '../../../components/mpvue-picker/mpvuePicker.vue';
 	import cityData from '../../../common/city.data.js';
 	import expendType from '../../../common/account_expend_type.js';
 	import {vSum} from '../../../resource/js/utils/regex.js';
+	import {
+	    mapState,
+	    mapMutations
+	} from 'vuex';
 	
     export default {
 		components: {
@@ -108,6 +113,7 @@
 				/* pageConst:{
 					typeTip:'支出类型'
 				}, */
+				themeColor: '#007AFF',
                 title: '收入列表',
 				layout:{
 					form:{show: true},
@@ -118,7 +124,6 @@
 				expDateStart: currentDate,
 				expDateEnd: currentDate,
 				// mulLinkageTwoPicker: cityData,
-				themeColor: '#007AFF',
 				// pickerValueDefault: [0],
 				// pickerValueArray: [],
 				typeValueArray: expendType,
@@ -144,6 +149,7 @@
 				remarkQuery: '',
 				remarkMaxLength:100,
 				
+				page:1,
 				duration:3000
             }
         },
@@ -155,6 +161,7 @@
 				return this.getDate('end');
 			}
 		},
+		computed: mapState(['loginName','hasLogin','token']),
 		methods: {
 			// 控制面板收缩
 			trigerCollapse(layout) {
@@ -237,57 +244,59 @@
 				}
 			},
 			typeOnCancel(e,elementId) {
-				if ("typeAdd"==elementId){
-					this.typeAddValue = '';
-					this.typeAddText = this.typeTip;
-					this.typeAddTipClass = true;
-				}else if ("typeQuery"==elementId){
-					this.typeQueryValue = '';
-					this.typeQueryText = this.typeTip;
-					this.typeQueryTipClass = true;
-				}
+				this.clearType(elementId);
 			},
 			sumBlur(e,eleId){
 				// console.log("sumBlur："+eleId);
 			},
-			saveExpend(){
-				// let tempURL = "http://localhost:8101/compre/expendType/loadTreeData.do?fieldMap=id:id,text:expend_type_name,parentId:fk_parent_id&treeRootVal=-1&treeFlag=expendType&resType=map&multiSelect=true&node=root";
-				/* let tempURL = "http://localhost:8101/login/login.do";
-				let reqObj = {url:tempURL,data:{loginSource:"M",loginName : "zjg",password : "dc483e80a7a0bd9ef71d8cf973673924"},
-								dataType:'',
-					success: (res) => {
-						console.log("success："+JSON.stringify(res.data));
-						
-						let tempURL1 = "http://localhost:8101/m/exampleBeanMobile/loadTreeData.do?fieldMap=id:id,text:name,parentId:parent_id&treeRootVal=-1&treeFlag=district&resType=map&multiSelect=false";
-						let reqObj1 = {url:tempURL1,data:{token : res.data.token,loginName : "zjg"},
-										dataType:'',
-							success: (res) => {
-								console.log("success1："+JSON.stringify(res.data));
-							},fail: (res) => {
-								console.log("fail1："+JSON.stringify(res.data));
-							},complete: (res) => {
-								console.log("complete1："+JSON.stringify(res.data));
-							}};
-						uni.request(reqObj1);
-					},fail: (res) => {
-						console.log("fail："+JSON.stringify(res.data));
-					},complete: (res) => {
-						console.log("complete："+JSON.stringify(res.data));
-					}};
-				uni.request(reqObj); */
+			loadList(e,opeType){
+				if ("query"==opeType){
+					this.lists = [];
+				}
 				
+				// 加载列表
+				uni.showLoading({title: '加载中...',mask:true});
+				let reqURL = config.SERVER_URL+"m/expend/searchData.do";
+				uni.request({url:reqURL,
+							data:{loginName : this.loginName,token : this.token,page:this.page,limit:config.PAGE_SIZE},
+							dataType:'json',
+							method:'POST',
+							header: {'content-type': 'application/x-www-form-urlencoded'},
+							success: (res) => {
+								let tempItem = res.data.items;
+								if (tempItem && tempItem.length>0){
+									for (let i = 0; i < tempItem.length; i++) {
+										this.lists.push(tempItem[i]);
+									}
+								}else{
+									uni.showToast({title:'暂无数据！',icon:'none',duration:this.duration});
+								}
+							},fail: (res) => {
+								uni.showToast({title:'加载列表失败！',icon:'none',duration:this.duration+2000});
+							},complete: (res) => {
+								uni.hideLoading();
+							}
+						});
+			},
+			loadMoreData(){
+				this.page++;
+				this.loadList(null,"more");
+			},
+			save(){
 				/* console.log("this.expDate："+this.expDate); */
+				/* console.log("this.typeAddValue："+this.typeAddValue); */
+				/* console.log("this.sumAdd："+this.sumAdd);
+				console.log("this.remark："+this.remark); */
 				if ( this.expDate==null || this.expDate=='' || this.expDate.length==0){
 					uni.showToast({title:'请选择支出日期！',icon:'none',duration:this.duration});
 					return;
 				}
-				/* console.log("this.typeAddValue："+this.typeAddValue); */
+				
 				if ( this.typeAddValue.length==0){
 					uni.showToast({title:'请选择支出类型！',icon:'none',duration:this.duration});
 					return;
 				}
-				/* console.log("this.sumAdd："+this.sumAdd);
-				console.log("this.remark："+this.remark); */
+				
 				
 				if (this.sumAdd==null || this.sumAdd==''){
 					uni.showToast({title:'请填写支出金额！',icon:'none',duration:this.duration});
@@ -306,29 +315,82 @@
 					return;
 				}
 				
-				// let tempURL = "http://localhost:8101/m/expend/save.do";// 开发环境
-				let tempURL = "http://39.104.162.221:8102/per/m/expend/save.do";// 测试环境
-				let reqObj = {url:tempURL,
-								data:{loginName : "zjg",token : service.getToken(),
-										expDate:this.expDate,fkExpendTypeId:this.typeAddValue,expSum:this.sumAdd,remark:this.remark},
-								dataType:'json',method:'POST',header: {'content-type': 'application/x-www-form-urlencoded'},
-					success: (res) => {
-						if (res.data.success){
-							uni.showToast({title:'保存成功！',icon:'none',duration:this.duration});
-						}else{
-							uni.showToast({title:'保存失败！'+JSON.stringify(res.data),icon:'none',duration:this.duration+500});
-						}
-						
-						/* console.log("success："+JSON.stringify(res.data)); */
-						
-					},fail: (res) => {
-						uni.showToast({title:'保存支出请求失败！'+JSON.stringify(res.data),icon:'none',duration:this.duration+500});
-						/* console.log("fail："+JSON.stringify(res.data)); */
-					},complete: (res) => {
-						/* console.log("complete："+JSON.stringify(res.data)); */
-					}};
-				uni.request(reqObj);
+				uni.showLoading({title: '正在保存...',mask:true});
+				let tempURL = config.SERVER_URL+"m/expend/save.do";
+				uni.request({url:tempURL,
+							data:{loginName : this.loginName,token : this.token,
+									expDate:this.expDate,fkExpendTypeId:this.typeAddValue,
+									expSum:this.sumAdd,remark:this.remark},
+							dataType:'json',
+							method:'POST',
+							header: {'content-type': 'application/x-www-form-urlencoded'},
+							success: (res) => {
+								if (res.data.success){
+									this.clearAddForm();
+									uni.showToast({title:'保存成功！',icon:'none',duration:this.duration});
+								}else{
+									uni.showToast({title:'保存失败！'+JSON.stringify(res.data.msg),icon:'none',duration:this.duration+500});
+								}
+							},fail: (res) => {
+								uni.showToast({title:'保存支出请求失败！',icon:'none',duration:this.duration+500});
+							},complete: (res) => {
+								uni.hideLoading();
+							}
+						});
 				
+			},
+			deleteData(e,item){
+				uni.showModal({
+					title: '提示',
+					content: '确定删除吗？',
+					success: (res) => {
+						if (res.confirm) {
+							uni.showLoading({title: '正在删除...',mask:true});
+							
+							let reqURL = config.SERVER_URL+"m/expend/delete.do";
+							uni.request({url:reqURL,
+										data:{loginName : this.loginName,token : this.token,ids:item.id},
+										dataType:'json',
+										method:'POST',
+										header: {'content-type': 'application/x-www-form-urlencoded'},
+										success: (res) => {
+											if (res.data.success){
+												uni.showToast({title:'删除成功！',icon:'none',duration:this.duration});
+												this.loadList(null,'query');
+											}else{
+												uni.showToast({title:'删除失败！'+res.data.msg,icon:'none',duration:this.duration+5000});
+											}
+										},fail: (res) => {
+											uni.showToast({title:'删除失败！',icon:'none',duration:this.duration+2000});
+										},complete: (res) => {
+											uni.hideLoading();
+										}
+									});
+						} else if (res.cancel) {
+							
+						}
+					}
+				});
+			},
+			clearAddForm(){
+				this.clearType("typeAdd");
+				this.sumAdd='';
+				this.remark='';
+			},
+			clearType(type){
+				if ("typeAdd"==type){
+					this.typeAddValue = '';
+					this.typeAddText = this.typeTip;
+					this.typeAddTipClass = true;
+				}else if ("typeQuery"==type){
+					this.typeQueryValue = '';
+					this.typeQueryText = this.typeTip;
+					this.typeQueryTipClass = true;
+				}
+			},toLoginPage(){
+				uni.navigateTo({
+				    url: '../../login/login'
+				});
 			}
 		},
 		onBackPress() {
@@ -350,12 +412,10 @@
 			}
 		},
         onLoad() {
-			service.login();
-            let list = [];
-            for (let i = 0; i < 10; i++) {
-                list.push(i)
-            }
-            this.lists = list;
+			if (!this.hasLogin) {
+			    this.toLoginPage();
+			}
+			this.loadList(null,"query");
         }
     }
 </script>
