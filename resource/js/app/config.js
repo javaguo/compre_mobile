@@ -1,14 +1,31 @@
-const SERVER_URL = 'http://39.104.162.221:8102/per/';
-// const SERVER_URL = 'http://localhost:8101/compre/';
+const SERVER_URL = 'http://localhost:8101/compre/';
 const TEST_LOGIN_NAME = 'zjg';
 const TEST_LOGIN_PWD = 'c696360395cb2338d78f9682de683f7e';
-
+const KEY_LOGIN_NAME = 'loginName';
+const KEY_PASSWORD_ENCRY = 'passwordEncry';
+const LOGINSOURCE = 'M';
 const PAGE_SIZE = 10;
 
+// 提示框显示时长
+const DURATION = 2500;
+const DURATION_MIDDLE = 5000;
+const DURATION_LONG = 7500;
+
+const PICKER_THEME_COLOR = '#007AFF';
 
 export default {
 	SERVER_URL,
+	LOGINSOURCE,
 	TEST_LOGIN_NAME,
 	TEST_LOGIN_PWD,
-	PAGE_SIZE
+	KEY_LOGIN_NAME,
+	KEY_PASSWORD_ENCRY,
+	
+	PAGE_SIZE,
+	
+	DURATION,
+	DURATION_MIDDLE,
+	DURATION_LONG,
+	
+	PICKER_THEME_COLOR
 }

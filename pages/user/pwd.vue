@@ -1,5 +1,5 @@
 <template>
-    <view class="content">
+    <view class="com_content com_page">
         <view class="input-group">
             <view class="input-row">
                 <text class="title">邮箱：</text>

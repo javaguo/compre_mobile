@@ -1,11 +1,42 @@
 .com_page{
 	width: 100%;
-	background-color: #EAEAEA;
+	background-color: #FAFAFA;
 }
+
+.com_content {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+            -ms-flex: 1;
+                flex: 1;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+            -ms-flex-direction: column;
+                flex-direction: column;
+        padding: 20rpx;
+}
+
+.com_hidden{
+	display: none;
+	height: 0;
+}
+
 .com_layout_column{
 	display: flex;
 	flex: 1;
 	flex-direction: column;
+}
+
+.com_list_tip{
+	text-align: center;
+	height: 100%;
+	line-height: 10;
+	font-size: 40upx;
+	color: #DDDDDD;
 }
 
 .com_list_scroll{
@@ -153,13 +184,13 @@
 }
 
 .com_form_save{
-	width: 150upx;
+	width: 100upx;
 	height: 60upx;
 	line-height:50upx;
 	font-size:35upx;
 	color: #FFF;
 	background-color: #1296db;
-	margin: 5upx 20upx;
+	margin: 8upx 5upx;
 	padding: 5upx 0upx;
 	text-align: center;
 	align-items: center;

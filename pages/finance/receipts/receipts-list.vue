@@ -1,11 +1,13 @@
 <template>
     <view class="com_page com_layout_column">
         <page-head :title="title"></page-head>
+		
+		<!-- 表单添加区域开始 -->
 		<view class="com_form com_form_bottom" >
 			<form>
 			<view class="com_form_row">
-				<picker mode="date" name="expDate" :value="expDate"  @change="bindDateChange($event,'expDate')" @cancel="cancelDate($event,'expDate')">
-					<view class="com_form_input com_form_date" >{{expDate}}</view>
+				<picker mode="date" name="recDate" :value="recDate"  @change="bindDateChange($event,'recDate')" @cancel="cancelDate($event,'recDate')">
+					<view class="com_form_input com_form_date" >{{recDate}}</view>
 				</picker>
 				
 				<view class="com_form_input com_form_type" :class="typeAddTipClass ? 'com_placeholder' : ''"
@@ -16,24 +18,27 @@
 				</mpvue-picker>
 				
 				<input class="com_form_input com_form_sum" placeholder-class="com_placeholder" type="digit" 
-					:maxlength="sumMaxLength" placeholder="金额" :value="sumAdd"/>
+					:maxlength="sumMaxLength" placeholder="金额"  v-model.trim="sumAdd"/>
 			 </view>
 			 <view class="com_form_row">
 			 	<input class="com_form_input com_form_remark" placeholder-class="com_placeholder" placeholder="备注" :maxlength="remarkMaxLength"
-					:value="remark"/>
-				<button class="com_form_save" @click="saveExpend">保存</button>
+					v-model.trim="remark"/>
+				<button class="com_form_save" @click="clearAddForm">清空</button>
+				<button class="com_form_save" @click="save">保存</button>
 			  </view>
 			  </form>
 		</view>
+		<!-- 表单添加区域结束 -->
 		
+		<!-- 列表查询区域开始 -->
 		<view class="com_form" >
 			<view class="com_form_row">
-				<picker mode="date" name="expDateStart" :value="expDateStart"  @change="bindDateChange($event,'expDateStart')" >
-					<view class="com_form_input com_form_date" >{{expDateStart}}</view>
+				<picker mode="date" name="recDateStart" :value="recDateStart"  @change="bindDateChange($event,'recDateStart')" >
+					<view class="com_form_input com_form_date" >{{recDateStart}}</view>
 				</picker>
 				<view class="com_form_text">-</view>
-				<picker mode="date" name="expDateEnd" :value="expDateEnd"  @change="bindDateChange($event,'expDateEnd')" >
-					<view class="com_form_input com_form_date" >{{expDateEnd}}</view>
+				<picker mode="date" name="recDateEnd" :value="recDateEnd"  @change="bindDateChange($event,'recDateEnd')" >
+					<view class="com_form_input com_form_date" >{{recDateEnd}}</view>
 				</picker>
 				
 				<view class="com_form_input com_form_type" :class="typeQueryTipClass ? 'com_placeholder' : ''"
@@ -42,53 +47,64 @@
 						:pickerValueDefault="typeQuerySelectedIndex"  :pickerValueArray="typeValueArray"
 						@onConfirm="typeOnConfirm($event,'typeQuery')" @onCancel="typeOnCancel($event,'typeQuery')" >
 				</mpvue-picker>
-				
 			 </view>
 			 <view class="com_form_row">
 			 	<input class="com_form_input com_form_sum_q" placeholder-class="com_placeholder" type="digit" :maxlength="sumMaxLength" placeholder="最小金额"
-					:value="sumStart" @blur="sumBlur($event,'sumMin')"/>
+					v-model.trim="sumStart" @blur="sumBlur($event,'sumMin')"/>
 				<view class="com_form_text">-</view>
 			 	<input class="com_form_input com_form_sum_q" placeholder-class="com_placeholder" type="digit" :maxlength="sumMaxLength" placeholder="最大金额" 
-					:value="sumEnd" @blur="sumBlur($event,'sumMax')"/>
+					v-model.trim="sumEnd" @blur="sumBlur($event,'sumMax')"/>
 			 	<input class="com_form_input com_form_remark" placeholder-class="com_placeholder" placeholder="备注" :maxlength="remarkMaxLength" 
-					:value="remarkQuery"/>
-				<button class="com_form_save">查询</button>
+					v-model.trim="remarkQuery"/>
+				<button class="com_form_save" @click="clearQueryForm">清空</button>	
+				<button class="com_form_save" @click="loadList($event,'query')">查询</button>
 			  </view>
 		</view>
+		<!-- 列表查询区域结束 -->
 		
+		<!-- 列表区域开始 -->
         <view class="">
-			<scroll-view class="com_list_scroll" scroll-y="true">
-            <block v-for="(item,index) in lists" :key="index">
+			<scroll-view class="com_list_scroll" scroll-y="true" @scrolltolower="loadMoreData">
+			<view v-show="listShowNoDataTip" class="com_list com_list_tip">暂无数据！</view>
+            <block v-for="(item,index) in list.data" :key="index">
                     <view class="com_list" >
 						<view class="com_list_row com_list_row_top" >
-							<view class="list_text list_date">2019-02-18</view>
-							<view class="list_text list_type1 uni-ellipsis">餐饮支出餐饮支出餐饮支出</view>
-							<view class="list_text list_type2 uni-ellipsis">三餐三餐三餐三餐三餐三餐三餐</view>
-							<view class="list_text list_sum uni-ellipsis">a3534399892.20a</view>
+							<view class="list_text list_date">{{item.recDate}}</view>
+							<view class="list_text list_type1 uni-ellipsis">{{item.receiptsParentTypeName}}</view>
+							<view class="list_text list_type2 uni-ellipsis">{{item.fkReceiptsTypeId}}</view>
+							<view class="list_text list_sum uni-ellipsis">{{item.recSum}}</view>
 						</view>
 						<view class="com_list_row">
 							<view class="list_text list_row2_column1">备注：</view>
-							<view class="list_text list_row2_column2 uni-ellipsis" ></view>
+							<view class="list_text list_row2_column2 uni-ellipsis" >{{item.remark}}</view>
 							<view class="list_icon">
-								<image class="list-icon_img" src="../../../static/img/common/editor32.png"></image>
+								<image class="list-icon_img" src="../../../static/img/common/editor32.png" @click="editData($event,item)"></image>
 							</view>
 							<view class="list_icon">
-								<image class="list-icon_img" src="../../../static/img/common/delete32.png"></image>
+								<image class="list-icon_img" src="../../../static/img/common/delete32.png" @click="deleteData($event,item)"></image>
 							</view>
 							<view class="list_icon">
-								<image class="list-icon_img" src="../../../static/img/common/view32.png"></image>
+								<image class="list-icon_img" src="../../../static/img/common/view32.png" @click="viewData($event,item)"></image>
 							</view>
 						</view>	
                     </view>
             </block>
 			</scroll-view>
 		</view>
+		<!-- 列表区域结束 -->
     </view>
 </template>
 
 <script>
+	import config from '../../../resource/js/app/config.js';
+	import appCommon from '../../../resource/js/app/common.js';
+	import {vSum} from '../../../resource/js/utils/regex.js';
+	
 	import mpvuePicker from '../../../components/mpvue-picker/mpvuePicker.vue';
-	import cityData from '../../../common/city.data.js';
+	import {
+	    mapState,
+	    mapMutations
+	} from 'vuex';
 	
     export default {
 		components: {
@@ -98,49 +114,56 @@
 			const currentDate = this.getDate({
 				format: true
 			});
-			const constTypeTip = "支出类型";// 只在下面的return块里使用
+			const constTypeTip = "收入类型";// 只在下面的return块里使用
 			const constSumMinVal = 0;
 			const constSumMaxVal = 100000000;
             return {
-				/* pageConst:{
-					typeTip:'支出类型'
-				}, */
-                title: '收入列表',
-				layout:{
-					form:{show: true},
-					list:{show: false}
-				},
-				lists: [],
-				expDate: currentDate,
-				expDateStart: currentDate,
-				expDateEnd: currentDate,
-				// mulLinkageTwoPicker: cityData,
-				themeColor: '#007AFF',
-				// pickerValueDefault: [0],
-				// pickerValueArray: [],
-				typeValueArray: cityData,
+				beanId:'',
+				// 日期相关
+				recDate: currentDate,
+				recDateStart: currentDate,
+				recDateEnd: currentDate,
+				// 类型级联公共属性
+				typeValueArray: [],
 				typeMode: 'multiLinkageSelector',
 				typeDeepLength: 2,
 				typeTip:constTypeTip,
-				typeAddSelectedIndex: [0, 0],
-				typeQuerySelectedIndex: [0, 0],
+				typeAddSelectedIndex: [0, 0],// 类型级联添加区域使用
 				typeAddText: constTypeTip,
-				typeQueryText: constTypeTip,
 				typeAddValue: '',
-				typeQueryValue: '',
 				typeAddTipClass:true,
+				typeQuerySelectedIndex: [0, 0],// 类型级联查询区域使用
+				typeQueryText: constTypeTip,
+				typeQueryValue: '',
 				typeQueryTipClass:true,
-				sumAdd:'',
-				sumStart:'',
-				sumEnd:'',
+				// 金额相关
 				sumMaxLength:11,
 				sumMinVal:constSumMinVal,
 				sumMaxVal:constSumMaxVal,
+				sumMaxValStr:'1亿',
+				sumAdd:'',
+				sumStart:'',
+				sumEnd:'',
+				// 备注相关
+				remarkMaxLength:100,
 				remark: '',
 				remarkQuery: '',
-				remarkMaxLength:100,
 				
-				duration:3000
+				// lists: [],
+				list:{// 列表展示使用
+					data:[],
+					hasLoadedData:false,
+					isLastPage:false
+				},
+				listShowNoDataTip:false,// 有些地方不能用list.listShowNoDataTip  先放到list外面
+				// 配置相关
+				title: '收入列表',
+				themeColor: config.PICKER_THEME_COLOR,
+				page:1,
+				layout:{
+					form:{show: true},
+					list:{show: false}
+				}
             }
         },
 		computed: {
@@ -151,38 +174,250 @@
 				return this.getDate('end');
 			}
 		},
+		computed: mapState(['loginName','hasLogin','token']),
 		methods: {
-			// 控制面板收缩
-			trigerCollapse(layout) {
+			loadList(e,opeType){
+				if ("query"==opeType){// 点击查询
+					this.list.data = [];
+					this.page = 1;
+					this.list.isLastPage = false;
+				}else if ("more"==opeType && !this.list.isLastPage){// 加载更多
+					this.page++;
+				}
+				if (this.list.isLastPage){
+					uni.showToast({title:'没有更多数据啦！',icon:'none',duration:config.DURATION});
+					return;
+				}
+				
+				if (this.recDateStart!=null && this.recDateEnd !=null && this.recDateStart>this.recDateEnd){
+					uni.showToast({title:'查询开始日期不能大于结束日期！',icon:'none',duration:config.DURATION_MIDDLE});
+					return;
+				}
+				
+				if (this.sumStart!=null && this.sumStart!='' && this.sumEnd!=null && this.sumEnd!='' && this.sumStart>this.sumEnd){
+					uni.showToast({title:'查询最小金额不能大于最大金额！',icon:'none',duration:config.DURATION_MIDDLE});
+					return;
+				}
+				
+				// 加载列表
+				uni.showLoading({title: '加载中...',mask:true});
+				let reqURL = config.SERVER_URL+"m/receipts/searchData.do";
+				uni.request({url:reqURL,
+							data:{loginName : this.loginName,token : this.token,page:this.page,limit:config.PAGE_SIZE,
+								  recDateStart:this.recDateStart,recDateEnd:this.recDateEnd,fkReceiptsTypeId:this.typeQueryValue,
+								  expSumStart:this.sumStart,expSumEnd:this.sumEnd,remark:this.remarkQuery},
+							dataType:'json',
+							method:'POST',
+							header: {'content-type': 'application/x-www-form-urlencoded'},
+							success: (res) => {
+								uni.hideLoading();
+								this.list.hasLoadedData = true;
+								this.list.isLastPage = res.data.isLastPage;
+								
+								if (!res.data.success){
+									uni.showToast({title:'加载列表失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
+									return ;
+								}
+								
+								let tempItem = res.data.items;
+								if (tempItem && tempItem.length>0){
+									this.listShowNoDataTip = false;
+									for (let i = 0; i < tempItem.length; i++) {
+										this.list.data.push(tempItem[i]);
+									}
+								}else{
+									this.listShowNoDataTip = true;
+								}
+							},fail: (res) => {
+								uni.hideLoading();
+								uni.showToast({title:'加载列表失败！',icon:'none',duration:config.DURATION});
+							},complete: (res) => {
+							}
+						});
+			},
+			loadMoreData(){// 上滑列表加载更多 
+				this.loadList(null,"more");
+			},
+			clearQueryForm(){// 清空查询条件表单
+				this.clearType("typeQuery");
+				this.sumStart = '';
+				this.sumEnd = '';
+				this.remarkQuery = '';
+			},
+			save(){// 保存数据
+				if ( this.recDate==null || this.recDate=='' || this.recDate.length==0){
+					uni.showToast({title:'请选择收入日期！',icon:'none',duration:config.DURATION});
+					return;
+				}
+				
+				if ( this.typeAddValue.length==0){
+					uni.showToast({title:'请选择收入类型！',icon:'none',duration:config.DURATION});
+					return;
+				}
+				
+				if (this.sumAdd==null || this.sumAdd==''){
+					uni.showToast({title:'请填写收入金额！',icon:'none',duration:config.DURATION});
+					return;
+				}
+				/* if (!vSum(this.sumAdd) || this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
+					uni.showToast({title:'请填写正确的金额！收入金额应大于'+
+										this.sumMinVal+'且小于'+this.sumMaxValStr,
+									icon:'none',duration:this.duration+2000});
+					return;
+				} */
+				if (this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
+					uni.showToast({title:'请填写正确的金额！收入金额应大于'+
+										this.sumMinVal+'且小于'+this.sumMaxValStr,
+									icon:'none',duration:config.DURATION_MIDDLE});
+					return;
+				}
+				
+				uni.showLoading({title: '正在保存...',mask:true});
+				let tempURL = '';
+				let opeTypeTip = '';
+				let reqParam = {loginName : this.loginName,token : this.token,
+									recDate:this.recDate,fkReceiptsTypeId:this.typeAddValue,
+									recSum:this.sumAdd,remark:this.remark};
+				if (this.beanId!=null && this.beanId!=''){// 编辑
+					tempURL = config.SERVER_URL+"m/receipts/update.do";	
+					reqParam.id = this.beanId;
+					opeTypeTip = '修改';
+				}else{// 添加
+					tempURL = config.SERVER_URL+"m/receipts/save.do";
+					opeTypeTip = '保存';
+				}
+				uni.request({url:tempURL,
+							data:reqParam,
+							dataType:'json',
+							method:'POST',
+							header: {'content-type': 'application/x-www-form-urlencoded'},
+							success: (res) => {
+								uni.hideLoading();
+								if (res.data.success){
+									this.loadList(null,"query");// 重新加载数据
+									this.clearAddForm();
+									uni.showToast({title:opeTypeTip+'成功！',icon:'none',duration:config.DURATION});
+								}else{
+									uni.showToast({title:opeTypeTip+'失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
+								}
+							},fail: (res) => {
+								uni.hideLoading();
+								uni.showToast({title:opeTypeTip+'收入请求失败！',icon:'none',duration:config.DURATION});
+							},complete: (res) => {
+							}
+						});
+				
+			},
+			editData(e,item){// 编辑数据事件
+				uni.showLoading({title: '加载数据...',mask:true});
+				
+				let reqURL = config.SERVER_URL+"m/receipts/edit.do";
+				uni.request({url:reqURL,
+							data:{loginName : this.loginName,token : this.token,beanId:item.id},
+							dataType:'json',
+							method:'POST',
+							header: {'content-type': 'application/x-www-form-urlencoded'},
+							success: (res) => {
+								uni.hideLoading();
+								if (res.data.success){
+									this.beanId = res.data.bean.id;
+									this.recDate = res.data.bean.recDate;
+									this.typeAddValue = res.data.bean.fkReceiptsTypeId;
+									this.typeAddText = res.data.receiptsTypeName;
+									this.typeAddTipClass = false;
+									this.sumAdd = res.data.bean.recSum;
+									this.remark = res.data.bean.remark;
+								}else{
+									uni.showToast({title:'加载失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
+								}
+							},fail: (res) => {
+								uni.hideLoading();
+								uni.showToast({title:'加载失败！',icon:'none',duration:config.DURATION});
+							},complete: (res) => {
+							}
+						});
+			},
+			clearAddForm(){// 清空添加区域表单
+			    this.beanId = '';
+				this.clearType("typeAdd");
+				this.sumAdd='';
+				this.remark='';
+			},
+			deleteData(e,item){// 删除数据事件
+				uni.showModal({
+					title: '提示',
+					content: '确定删除吗？',
+					success: (res) => {
+						if (res.confirm) {// 确定删除
+							uni.showLoading({title: '正在删除...',mask:true});
+							
+							let reqURL = config.SERVER_URL+"m/receipts/delete.do";
+							uni.request({url:reqURL,
+										data:{loginName : this.loginName,token : this.token,ids:item.id},
+										dataType:'json',
+										method:'POST',
+										header: {'content-type': 'application/x-www-form-urlencoded'},
+										success: (res) => {
+											uni.hideLoading();
+											if (res.data.success){
+												uni.showToast({title:'删除成功！',icon:'none',duration:config.DURATION});
+												this.loadList(null,'query');
+											}else{
+												uni.showToast({title:'删除失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
+											}
+										},fail: (res) => {
+											uni.hideLoading();
+											uni.showToast({title:'删除失败！',icon:'none',duration:config.DURATION});
+										},complete: (res) => {
+										}
+									});
+						} else if (res.cancel) {// 取消删除
+							
+						}
+					}
+				});
+			},
+			viewData(e,item){// 跳转到详情页面
+				uni.navigateTo({
+				    url: 'receipts-detail?beanId='+item.id
+				});
+			},
+			/* toLoginPage(){// 跳转到登录页面  url: '../../login/login'
+				uni.navigateTo({
+				    url: '../../user/login'
+				});
+			}, */
+			trigerCollapse(layout) {// 控制面板收缩
 			    if (layout=="form"){
 					this.layout.form.show = !this.layout.form.show;
 				}
 			},
 			// 日期相关方法开始
-			bindDateChange: function(e,elementId) {
-				if ("expDate"==elementId){
-					this.expDate = e.target.value;
-				}else if ("expDateStart"==elementId){
-					this.expDateStart = e.target.value;
-				}else if ("expDateEnd"==elementId){
-					this.expDateEnd = e.target.value;
+			bindDateChange: function(e,elementId) {// 日期确定事件 
+				if ("recDate"==elementId){
+					this.recDate = e.target.value;
+				}else if ("recDateStart"==elementId){
+					this.recDateStart = e.target.value;
+				}else if ("recDateEnd"==elementId){
+					this.recDateEnd = e.target.value;
 				}
 			},
-			cancelDate:function (e,id){// 设计为时间不能取消
-				/* if ("expDate"==id){
-					this.expDateTip = true;
-					this.expDate = this.datePlaceholder;
+			cancelDate:function (e,id){// 日期取消事件
+				// 日期不能取消
+				/* if ("recDate"==id){
+					this.recDateTip = true;
+					this.recDate = this.datePlaceholder;
 				}else{
 					
 				} */
 			},
 			getDate(type) {
 				const date = new Date();
-		
+					
 				let year = date.getFullYear();
 				let month = date.getMonth() + 1;
 				let day = date.getDate();
-		
+					
 				if (type === 'start') {
 					year = year - 60;
 				} else if (type === 'end') {
@@ -190,91 +425,72 @@
 				}
 				month = month > 9 ? month : '0' + month;;
 				day = day > 9 ? day : '0' + day;
-		
+					
 				return `${year}-${month}-${day}`;
 			},
 			// 日期相关方法结束
-			// 二级联动选择支出类型
-			selectType(e,ref) {
-				// this.pickerValueArray = this.mulLinkageTwoPicker
-				// this.mode = 'multiLinkageSelector'
-				// this.deepLength = 2
-				// this.pickerValueDefault = [0, 0]
+			loadType(){
+				let reqURL = config.SERVER_URL+"m/receiptsType/loadTreeData.do?fieldMap=value:id,label:receipts_type_name,parentId:fk_parent_id&treeRootVal=-1&treeFlag=receiptsType&resType=map&multiSelect=false";
+				uni.request({url:reqURL,
+							data:{loginName : this.loginName,token : this.token},
+							dataType:'json',
+							method:'POST',
+							header: {'content-type': 'application/x-www-form-urlencoded'},
+							success: (res) => {
+								if (res.data!=null && res.data!=undefined){
+									this.typeValueArray = res.data;
+								}else{
+									uni.showToast({title:'加载收入类型失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
+								}
+							},fail: (res) => {
+								uni.showToast({title:'加载收入类型失败！',icon:'none',duration:config.DURATION});
+							},complete: (res) => {
+							}
+					});
+			},
+			selectType(e,ref) {// 收入类型框点击事件
+				uni.hideKeyboard();
+				if (this.typeValueArray==undefined || this.typeValueArray==null || this.typeValueArray.length==0){
+					uni.showToast({title:'您还没有配置收入类型！请在"设置"中生成类型或登录管理后台配置类型！',icon:'none',duration:config.DURATION_LONG});
+					return;
+				}
 				if ("typeAdd"==ref){
 					this.$refs.typeAddPicker.show();
-					
 				}else if ("typeQuery"==ref){
 					this.$refs.typeQueryPicker.show();
 				}
 			},
-			typeOnConfirm(e,elementId) {
-				let selectedObj = cityData[e.index[0]].children[e.index[1]];
+			typeOnConfirm(e,elementId) {// 收入类型确定事件
+				// console.log("JSON.stringify(e)："+JSON.stringify(e));
+				let selectedObj = this.typeValueArray[e.index[0]].children[e.index[1]];
 				let selectedVal = selectedObj.value;
 				let selectedLabel = selectedObj.label;
 				
-				console.log("JSON.stringify(e)："+JSON.stringify(e));
 				if ("typeAdd"==elementId){
-					console.log("typeAdd："+JSON.stringify(e));
-					// this.typeAddText = JSON.stringify(e);
 					this.typeAddValue = selectedVal;
 					this.typeAddText = selectedLabel;
 					this.typeAddTipClass = false;
 				}else if ("typeQuery"==elementId){
-					console.log("typeQuery："+JSON.stringify(e));
-					// this.typeQueryText = JSON.stringify(e);
-					
-					console.log("typeQueryaaa："+selectedObj.label);
-					// cityData[e.index[0]][e.index[1]];
 					this.typeQueryValue = selectedVal;
 					this.typeQueryText = selectedLabel;
 					this.typeQueryTipClass = false;
 				}
 			},
-			typeOnCancel(e,elementId) {
-				if ("typeAdd"==elementId){
+			typeOnCancel(e,elementId) {// 收入类型取消事件
+				this.clearType(elementId);
+			},
+			clearType(type){// 清空收入类型的值
+				if ("typeAdd"==type){
 					this.typeAddValue = '';
 					this.typeAddText = this.typeTip;
 					this.typeAddTipClass = true;
-				}else if ("typeQuery"==elementId){
+				}else if ("typeQuery"==type){
 					this.typeQueryValue = '';
 					this.typeQueryText = this.typeTip;
 					this.typeQueryTipClass = true;
 				}
 			},
-			sumBlur(e,eleId){
-				// console.log("sumBlur："+eleId);
-			},
-			saveExpend(){
-				console.log("this.expDate："+this.expDate);
-				if ( this.expDate==null || this.expDate=='' || this.expDate.length==0){
-					uni.showToast({title:'请选择支出日期！',icon:'none',duration:this.duration});
-					return;
-				}
-				console.log("this.typeAddValue："+this.typeAddValue);
-				if ( this.typeAddValue.length==0){
-					uni.showToast({title:'请选择支出类型！',icon:'none',duration:this.duration});
-					return;
-				}
-				console.log("this.sumAdd："+this.sumAdd);
-				console.log("this.remark："+this.remark);
-				let tempURL = "http://localhost:8101/compre/expendType/loadTreeData.do?fieldMap=id:id,text:expend_type_name,parentId:fk_parent_id&treeRootVal=-1&treeFlag=expendType&resType=map&multiSelect=true&node=root";
-				let reqObj = {url:tempURL,data:'',dataType:'',
-					success: (res) => {
-						console.log("success："+res.data);
-					},fail: (res) => {
-						console.log("fail："+res.data);
-					},complete: (res) => {
-						console.log("complete："+res.data);
-					}};
-				uni.request(reqObj);
-				if (this.sumAdd==null || this.sumAdd==''){
-					uni.showToast({title:'请填写支出金额！',icon:'none',duration:this.duration});
-					return;
-				}
-				if (this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
-					uni.showToast({title:'支出金额应大于'+this.sumMinVal+'且小于'+this.sumMaxVal,icon:'none',duration:this.duration});
-					return;
-				}
+			sumBlur(e,eleId){// 金额失去焦点
 			}
 		},
 		onBackPress() {
@@ -296,15 +512,19 @@
 			}
 		},
         onLoad() {
-            let list = [];
-            for (let i = 0; i < 10; i++) {
-                list.push(i)
-            }
-            this.lists = list;
-        }
+        },
+		onShow(){
+			if (!this.hasLogin){
+				this.listShowNoDataTip = true;
+				appCommon.toLoginPage();
+			}else{
+				this.loadType();// 加载收入类型
+			}
+			
+			if (this.hasLogin && !this.list.hasLoadedData) {
+				this.loadList(null,"query");
+			}
+		}
     }
 </script>
 
-<style>
-
-</style>

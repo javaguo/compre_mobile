@@ -1,5 +1,5 @@
 <template>
-    <view class="content">
+    <view class="content com_page">
         <view class="input-group">
             <view class="input-row border">
                 <text class="title">账号：</text>

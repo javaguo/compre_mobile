@@ -1,5 +1,5 @@
 <template>
-    <view class="content">
+    <view class="com_content com_page">
         <view class="input-group">
             <view class="input-row border">
                 <text class="title">账号：</text>
@@ -13,22 +13,24 @@
         <view class="btn-row">
             <button type="primary" class="primary" @tap="bindLogin">登录</button>
         </view>
+		<!-- 
         <view class="action-row">
             <navigator url="../reg/reg">注册账号</navigator>
             <text>|</text>
             <navigator url="../pwd/pwd">忘记密码</navigator>
         </view>
+		-->
     </view>
 </template>
 
 <script>
 	import config from '../../resource/js/app/config.js';
-    import service from '../../service.js';
     import {
         mapState,
         mapMutations
-    } from 'vuex'
-    import mInput from '../../components/m-input.vue'
+    } from 'vuex';
+    import mInput from '../../components/m-input.vue';
+	import md5 from '../../resource/js/plugin/md5.min.js';
 
     export default {
         components: {
@@ -36,22 +38,16 @@
         },
         data() {
             return {
-                loginName: config.TEST_LOGIN_NAME,
+                loginName: '',
                 password: '',
+				passwordEncry:'',
                 positionTop: 0
             }
         },
         computed: mapState(['forcedLogin','hasLogin','token']),
         methods: {
             ...mapMutations(['loginInit']),
-            initPosition() {
-                /**
-                 * 使用 absolute 定位，并且设置 bottom 值进行定位。软键盘弹出时，底部会因为窗口变化而被顶上来。
-                 * 反向使用 top 进行定位，可以避免此问题。
-                 */
-                this.positionTop = uni.getSystemInfoSync().windowHeight - 100;
-            },
-            bindLogin() {
+            bindLogin() {// 登录事件
                 if (this.loginName.length < 1) {
                     uni.showToast({
                         icon: 'none',
@@ -66,51 +62,92 @@
                     });
                     return;
                 }
+				this.passwordEncry = md5(this.password);
 				
 				this.login();
             },
-			login(){
+			login(){// 登录请求
+				uni.hideLoading();
 				let tempURL = config.SERVER_URL+"login/login.do";
-				let reqData = {loginSource:"M",loginName : config.TEST_LOGIN_NAME,password : config.TEST_LOGIN_PWD};
-				// let reqData = {loginSource:"M",loginName : this.loginName,password : this.password};
+				let reqData = {loginSource:config.LOGINSOURCE,loginName : this.loginName,password : this.passwordEncry};
 				
-				let reqObj = {url:tempURL,data:reqData,dataType:'',
+				uni.request({url:tempURL,data:reqData,dataType:'',
 					success: (res) => {
-						/* console.log("login success："+JSON.stringify(res.data)); */
+						uni.hideLoading();
+						
+						// 缓存用户名、密码
+						uni.setStorage({
+							key: config.KEY_LOGIN_NAME,
+							data: this.loginName,
+							success:()=>{}
+						});
+						uni.setStorage({
+							key: config.KEY_PASSWORD_ENCRY,
+							data: this.passwordEncry,
+							success:()=> {}
+						});
+						
 						if (res.data.success){
-							uni.showToast({icon: 'none',title: '登录成功！'});
+							uni.showToast({icon: 'none',title: '登录成功！',duration:config.DURATION});
 							this.loginInit({"loginName":this.loginName,"token":res.data.token});
 							this.toMain();
 						}else{
-							uni.showToast({
-							    icon: 'none',
-							    title: res.data.info
-							});
+							uni.showToast({icon: 'none',title: res.data.info,duration:config.DURATION});
 						}
 					},fail: (res) => {
-						uni.showToast({title:'登录请求失败！'+JSON.stringify(res.data),icon:'none',duration:this.duration+500});
+						uni.hideLoading();
+						uni.showToast({title:'登录请求失败！',icon:'none',duration:config.DURATION});
 					},complete: (res) => {
-					}};
-				uni.request(reqObj);
+					}
+				});
+			},
+			autoLogin(){// 自动登录
+				uni.getStorage({key: config.KEY_LOGIN_NAME,
+								success:(res)=> {
+									this.loginName = res.data;
+								}});
+				uni.getStorage({key: config.KEY_PASSWORD_ENCRY,
+								success:(res)=> {
+									this.passwordEncry = res.data;
+								}});
+								
+				if (this.loginName!=null && this.loginName!=''
+					&& this.passwordEncry!=null && this.passwordEncry!=''){
+					this.login();
+				}
 			},
             toMain() {
                 /**
                  * 强制登录时使用reLaunch方式跳转过来
                  * 返回首页也使用reLaunch方式
                  */
-                if (this.forcedLogin) {
+                /* if (this.forcedLogin) {
                     uni.reLaunch({
                         url: '../main/main',
                     });
                 } else {
                     uni.navigateBack();
-                }
+                } */
+				uni.reLaunch({
+				    url: '/pages/finance/expend/expend-list',
+				});
 
-            }
+            },
+			initPosition() {
+			    /**
+			     * 使用 absolute 定位，并且设置 bottom 值进行定位。软键盘弹出时，底部会因为窗口变化而被顶上来。
+			     * 反向使用 top 进行定位，可以避免此问题。
+			     */
+			    this.positionTop = uni.getSystemInfoSync().windowHeight - 100;
+			}
         },
+		onShow(){
+			if (!config.hasLogin){
+				this.autoLogin();	
+			}
+		},
         onLoad() {
             this.initPosition();
-            // this.initProvider();
         }
     }
 </script>

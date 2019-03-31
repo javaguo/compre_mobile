@@ -11,27 +11,37 @@
                 "navigationBarTitleText": "收入列表"
             }
         },{
+            "path": "pages/finance/receipts/receipts-detail",
+            "style": {
+                "navigationBarTitleText": "收入详情"
+            }
+        },{
             "path": "pages/finance/expend/expend-list",
             "style": {
                 "navigationBarTitleText": "支出列表"
             }
         },{
-            "path": "pages/main/main",
+            "path": "pages/finance/expend/expend-detail",
             "style": {
-                "navigationBarTitleText": "登录模板"
+                "navigationBarTitleText": "支出详情"
+            }
+        },{
+            "path": "pages/setting/setting",
+            "style": {
+                "navigationBarTitleText": "设置"
             }
         }, {
-            "path": "pages/login/login",
+            "path": "pages/user/login",
             "style": {
                 "navigationBarTitleText": "登录"
             }
         }, {
-            "path": "pages/reg/reg",
+            "path": "pages/user/reg",
             "style": {
                 "navigationBarTitleText": "注册"
             }
         }, {
-            "path": "pages/pwd/pwd",
+            "path": "pages/user/pwd",
             "style": {
                 "navigationBarTitleText": "找回密码"
             }
@@ -62,8 +72,8 @@
             "iconPath": "static/img/index/expend.png",
             "selectedIconPath": "static/img/index/expendHL.png"
         },{
-            "pagePath": "pages/main/main",
-            "text": "更多",
+            "pagePath": "pages/setting/setting",
+            "text": "设置",
             "iconPath": "static/img/index/more.png",
             "selectedIconPath": "static/img/index/moreHL.png"
         }, {

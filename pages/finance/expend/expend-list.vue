@@ -1,6 +1,8 @@
 <template>
     <view class="com_page com_layout_column">
         <page-head :title="title"></page-head>
+		
+		<!-- 表单添加区域开始 -->
 		<view class="com_form com_form_bottom" >
 			<form>
 			<view class="com_form_row">
@@ -21,11 +23,14 @@
 			 <view class="com_form_row">
 			 	<input class="com_form_input com_form_remark" placeholder-class="com_placeholder" placeholder="备注" :maxlength="remarkMaxLength"
 					v-model.trim="remark"/>
+				<button class="com_form_save" @click="clearAddForm">清空</button>
 				<button class="com_form_save" @click="save">保存</button>
 			  </view>
 			  </form>
 		</view>
+		<!-- 表单添加区域结束 -->
 		
+		<!-- 列表查询区域开始 -->
 		<view class="com_form" >
 			<view class="com_form_row">
 				<picker mode="date" name="expDateStart" :value="expDateStart"  @change="bindDateChange($event,'expDateStart')" >
@@ -42,7 +47,6 @@
 						:pickerValueDefault="typeQuerySelectedIndex"  :pickerValueArray="typeValueArray"
 						@onConfirm="typeOnConfirm($event,'typeQuery')" @onCancel="typeOnCancel($event,'typeQuery')" >
 				</mpvue-picker>
-				
 			 </view>
 			 <view class="com_form_row">
 			 	<input class="com_form_input com_form_sum_q" placeholder-class="com_placeholder" type="digit" :maxlength="sumMaxLength" placeholder="最小金额"
@@ -52,13 +56,17 @@
 					v-model.trim="sumEnd" @blur="sumBlur($event,'sumMax')"/>
 			 	<input class="com_form_input com_form_remark" placeholder-class="com_placeholder" placeholder="备注" :maxlength="remarkMaxLength" 
 					v-model.trim="remarkQuery"/>
+				<button class="com_form_save" @click="clearQueryForm">清空</button>	
 				<button class="com_form_save" @click="loadList($event,'query')">查询</button>
 			  </view>
 		</view>
+		<!-- 列表查询区域结束 -->
 		
+		<!-- 列表区域开始 -->
         <view class="">
 			<scroll-view class="com_list_scroll" scroll-y="true" @scrolltolower="loadMoreData">
-            <block v-for="(item,index) in lists" :key="index">
+			<view v-show="listShowNoDataTip" class="com_list com_list_tip">暂无数据！</view>
+            <block v-for="(item,index) in list.data" :key="index">
                     <view class="com_list" >
 						<view class="com_list_row com_list_row_top" >
 							<view class="list_text list_date">{{item.expDate}}</view>
@@ -70,29 +78,29 @@
 							<view class="list_text list_row2_column1">备注：</view>
 							<view class="list_text list_row2_column2 uni-ellipsis" >{{item.remark}}</view>
 							<view class="list_icon">
-								<image class="list-icon_img" src="../../../static/img/common/editor32.png"></image>
+								<image class="list-icon_img" src="../../../static/img/common/editor32.png" @click="editData($event,item)"></image>
 							</view>
 							<view class="list_icon">
 								<image class="list-icon_img" src="../../../static/img/common/delete32.png" @click="deleteData($event,item)"></image>
 							</view>
 							<view class="list_icon">
-								<image class="list-icon_img" src="../../../static/img/common/view32.png"></image>
+								<image class="list-icon_img" src="../../../static/img/common/view32.png" @click="viewData($event,item)"></image>
 							</view>
 						</view>	
                     </view>
             </block>
 			</scroll-view>
 		</view>
+		<!-- 列表区域结束 -->
     </view>
 </template>
 
 <script>
 	import config from '../../../resource/js/app/config.js';
-	import service from '../../../service.js';
-	import mpvuePicker from '../../../components/mpvue-picker/mpvuePicker.vue';
-	import cityData from '../../../common/city.data.js';
-	import expendType from '../../../common/account_expend_type.js';
+	import appCommon from '../../../resource/js/app/common.js';
 	import {vSum} from '../../../resource/js/utils/regex.js';
+	
+	import mpvuePicker from '../../../components/mpvue-picker/mpvuePicker.vue';
 	import {
 	    mapState,
 	    mapMutations
@@ -110,34 +118,25 @@
 			const constSumMinVal = 0;
 			const constSumMaxVal = 100000000;
             return {
-				/* pageConst:{
-					typeTip:'支出类型'
-				}, */
-				themeColor: '#007AFF',
-                title: '收入列表',
-				layout:{
-					form:{show: true},
-					list:{show: false}
-				},
-				lists: [],
+				beanId:'',
+				// 日期相关
 				expDate: currentDate,
 				expDateStart: currentDate,
 				expDateEnd: currentDate,
-				// mulLinkageTwoPicker: cityData,
-				// pickerValueDefault: [0],
-				// pickerValueArray: [],
-				typeValueArray: expendType,
+				// 类型级联公共属性
+				typeValueArray: [],
 				typeMode: 'multiLinkageSelector',
 				typeDeepLength: 2,
 				typeTip:constTypeTip,
-				typeAddSelectedIndex: [0, 0],
-				typeQuerySelectedIndex: [0, 0],
+				typeAddSelectedIndex: [0, 0],// 类型级联添加区域使用
 				typeAddText: constTypeTip,
-				typeQueryText: constTypeTip,
 				typeAddValue: '',
-				typeQueryValue: '',
 				typeAddTipClass:true,
+				typeQuerySelectedIndex: [0, 0],// 类型级联查询区域使用
+				typeQueryText: constTypeTip,
+				typeQueryValue: '',
 				typeQueryTipClass:true,
+				// 金额相关
 				sumMaxLength:11,
 				sumMinVal:constSumMinVal,
 				sumMaxVal:constSumMaxVal,
@@ -145,12 +144,26 @@
 				sumAdd:'',
 				sumStart:'',
 				sumEnd:'',
+				// 备注相关
+				remarkMaxLength:100,
 				remark: '',
 				remarkQuery: '',
-				remarkMaxLength:100,
 				
+				// lists: [],
+				list:{// 列表展示使用
+					data:[],
+					hasLoadedData:false,
+					isLastPage:false
+				},
+				listShowNoDataTip:false,// 有些地方不能用list.listShowNoDataTip  先放到list外面
+				// 配置相关
+				title: '收入列表',
+				themeColor: config.PICKER_THEME_COLOR,
 				page:1,
-				duration:3000
+				layout:{
+					form:{show: true},
+					list:{show: false}
+				}
             }
         },
 		computed: {
@@ -163,143 +176,87 @@
 		},
 		computed: mapState(['loginName','hasLogin','token']),
 		methods: {
-			// 控制面板收缩
-			trigerCollapse(layout) {
-			    if (layout=="form"){
-					this.layout.form.show = !this.layout.form.show;
-				}
-			},
-			// 日期相关方法开始
-			bindDateChange: function(e,elementId) {
-				if ("expDate"==elementId){
-					this.expDate = e.target.value;
-				}else if ("expDateStart"==elementId){
-					this.expDateStart = e.target.value;
-				}else if ("expDateEnd"==elementId){
-					this.expDateEnd = e.target.value;
-				}
-			},
-			cancelDate:function (e,id){// 设计为时间不能取消
-				/* if ("expDate"==id){
-					this.expDateTip = true;
-					this.expDate = this.datePlaceholder;
-				}else{
-					
-				} */
-			},
-			getDate(type) {
-				const date = new Date();
-		
-				let year = date.getFullYear();
-				let month = date.getMonth() + 1;
-				let day = date.getDate();
-		
-				if (type === 'start') {
-					year = year - 60;
-				} else if (type === 'end') {
-					year = year + 2;
-				}
-				month = month > 9 ? month : '0' + month;;
-				day = day > 9 ? day : '0' + day;
-		
-				return `${year}-${month}-${day}`;
-			},
-			// 日期相关方法结束
-			// 二级联动选择支出类型
-			selectType(e,ref) {
-				uni.hideKeyboard();
-				// this.pickerValueArray = this.mulLinkageTwoPicker
-				// this.mode = 'multiLinkageSelector'
-				// this.deepLength = 2
-				// this.pickerValueDefault = [0, 0]
-				if ("typeAdd"==ref){
-					this.$refs.typeAddPicker.show();
-					
-				}else if ("typeQuery"==ref){
-					this.$refs.typeQueryPicker.show();
-				}
-			},
-			typeOnConfirm(e,elementId) {
-				console.log("JSON.stringify(e)："+JSON.stringify(e));
-				let selectedObj = expendType[e.index[0]].children[e.index[1]];
-				let selectedVal = selectedObj.value;
-				let selectedLabel = selectedObj.label;
-				
-				//console.log("JSON.stringify(e)："+JSON.stringify(e));
-				if ("typeAdd"==elementId){
-					console.log("typeAdd："+JSON.stringify(e));
-					// this.typeAddText = JSON.stringify(e);
-					this.typeAddValue = selectedVal;
-					this.typeAddText = selectedLabel;
-					this.typeAddTipClass = false;
-				}else if ("typeQuery"==elementId){
-					console.log("typeQuery："+JSON.stringify(e));
-					// this.typeQueryText = JSON.stringify(e);
-					
-					console.log("typeQueryaaa："+selectedObj.label);
-					// cityData[e.index[0]][e.index[1]];
-					this.typeQueryValue = selectedVal;
-					this.typeQueryText = selectedLabel;
-					this.typeQueryTipClass = false;
-				}
-			},
-			typeOnCancel(e,elementId) {
-				this.clearType(elementId);
-			},
-			sumBlur(e,eleId){
-				// console.log("sumBlur："+eleId);
-			},
 			loadList(e,opeType){
-				if ("query"==opeType){
-					this.lists = [];
+				if ("query"==opeType){// 点击查询
+					this.list.data = [];
+					this.page = 1;
+					this.list.isLastPage = false;
+				}else if ("more"==opeType && !this.list.isLastPage){// 加载更多
+					this.page++;
+				}
+				if (this.list.isLastPage){
+					uni.showToast({title:'没有更多数据啦！',icon:'none',duration:config.DURATION});
+					return;
+				}
+				
+				if (this.expDateStart!=null && this.expDateEnd !=null && this.expDateStart>this.expDateEnd){
+					uni.showToast({title:'查询开始日期不能大于结束日期！',icon:'none',duration:config.DURATION_MIDDLE});
+					return;
+				}
+				
+				if (this.sumStart!=null && this.sumStart!='' && this.sumEnd!=null && this.sumEnd!='' && this.sumStart>this.sumEnd){
+					uni.showToast({title:'查询最小金额不能大于最大金额！',icon:'none',duration:config.DURATION_MIDDLE});
+					return;
 				}
 				
 				// 加载列表
 				uni.showLoading({title: '加载中...',mask:true});
 				let reqURL = config.SERVER_URL+"m/expend/searchData.do";
 				uni.request({url:reqURL,
-							data:{loginName : this.loginName,token : this.token,page:this.page,limit:config.PAGE_SIZE},
+							data:{loginName : this.loginName,token : this.token,page:this.page,limit:config.PAGE_SIZE,
+								  expDateStart:this.expDateStart,expDateEnd:this.expDateEnd,fkExpendTypeId:this.typeQueryValue,
+								  expSumStart:this.sumStart,expSumEnd:this.sumEnd,remark:this.remarkQuery},
 							dataType:'json',
 							method:'POST',
 							header: {'content-type': 'application/x-www-form-urlencoded'},
 							success: (res) => {
+								uni.hideLoading();
+								this.list.hasLoadedData = true;
+								this.list.isLastPage = res.data.isLastPage;
+								
+								if (!res.data.success){
+									uni.showToast({title:'加载列表失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
+									return ;
+								}
+								
 								let tempItem = res.data.items;
 								if (tempItem && tempItem.length>0){
+									this.listShowNoDataTip = false;
 									for (let i = 0; i < tempItem.length; i++) {
-										this.lists.push(tempItem[i]);
+										this.list.data.push(tempItem[i]);
 									}
 								}else{
-									uni.showToast({title:'暂无数据！',icon:'none',duration:this.duration});
+									this.listShowNoDataTip = true;
 								}
 							},fail: (res) => {
-								uni.showToast({title:'加载列表失败！',icon:'none',duration:this.duration+2000});
-							},complete: (res) => {
 								uni.hideLoading();
+								uni.showToast({title:'加载列表失败！',icon:'none',duration:config.DURATION});
+							},complete: (res) => {
 							}
 						});
 			},
-			loadMoreData(){
-				this.page++;
+			loadMoreData(){// 上滑列表加载更多 
 				this.loadList(null,"more");
 			},
-			save(){
-				/* console.log("this.expDate："+this.expDate); */
-				/* console.log("this.typeAddValue："+this.typeAddValue); */
-				/* console.log("this.sumAdd："+this.sumAdd);
-				console.log("this.remark："+this.remark); */
+			clearQueryForm(){// 清空查询条件表单
+				this.clearType("typeQuery");
+				this.sumStart = '';
+				this.sumEnd = '';
+				this.remarkQuery = '';
+			},
+			save(){// 保存数据
 				if ( this.expDate==null || this.expDate=='' || this.expDate.length==0){
-					uni.showToast({title:'请选择支出日期！',icon:'none',duration:this.duration});
+					uni.showToast({title:'请选择支出日期！',icon:'none',duration:config.DURATION});
 					return;
 				}
 				
 				if ( this.typeAddValue.length==0){
-					uni.showToast({title:'请选择支出类型！',icon:'none',duration:this.duration});
+					uni.showToast({title:'请选择支出类型！',icon:'none',duration:config.DURATION});
 					return;
 				}
 				
-				
 				if (this.sumAdd==null || this.sumAdd==''){
-					uni.showToast({title:'请填写支出金额！',icon:'none',duration:this.duration});
+					uni.showToast({title:'请填写支出金额！',icon:'none',duration:config.DURATION});
 					return;
 				}
 				/* if (!vSum(this.sumAdd) || this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
@@ -311,40 +268,87 @@
 				if (this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
 					uni.showToast({title:'请填写正确的金额！支出金额应大于'+
 										this.sumMinVal+'且小于'+this.sumMaxValStr,
-									icon:'none',duration:this.duration+2000});
+									icon:'none',duration:config.DURATION_MIDDLE});
 					return;
 				}
 				
 				uni.showLoading({title: '正在保存...',mask:true});
-				let tempURL = config.SERVER_URL+"m/expend/save.do";
-				uni.request({url:tempURL,
-							data:{loginName : this.loginName,token : this.token,
+				let tempURL = '';
+				let opeTypeTip = '';
+				let reqParam = {loginName : this.loginName,token : this.token,
 									expDate:this.expDate,fkExpendTypeId:this.typeAddValue,
-									expSum:this.sumAdd,remark:this.remark},
+									expSum:this.sumAdd,remark:this.remark};
+				if (this.beanId!=null && this.beanId!=''){// 编辑
+					tempURL = config.SERVER_URL+"m/expend/update.do";	
+					reqParam.id = this.beanId;
+					opeTypeTip = '修改';
+				}else{// 添加
+					tempURL = config.SERVER_URL+"m/expend/save.do";
+					opeTypeTip = '保存';
+				}
+				uni.request({url:tempURL,
+							data:reqParam,
 							dataType:'json',
 							method:'POST',
 							header: {'content-type': 'application/x-www-form-urlencoded'},
 							success: (res) => {
+								uni.hideLoading();
 								if (res.data.success){
+									this.loadList(null,"query");// 重新加载数据
 									this.clearAddForm();
-									uni.showToast({title:'保存成功！',icon:'none',duration:this.duration});
+									uni.showToast({title:opeTypeTip+'成功！',icon:'none',duration:config.DURATION});
 								}else{
-									uni.showToast({title:'保存失败！'+JSON.stringify(res.data.msg),icon:'none',duration:this.duration+500});
+									uni.showToast({title:opeTypeTip+'失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
 								}
 							},fail: (res) => {
-								uni.showToast({title:'保存支出请求失败！',icon:'none',duration:this.duration+500});
-							},complete: (res) => {
 								uni.hideLoading();
+								uni.showToast({title:opeTypeTip+'支出请求失败！',icon:'none',duration:config.DURATION});
+							},complete: (res) => {
 							}
 						});
 				
 			},
-			deleteData(e,item){
+			editData(e,item){// 编辑数据事件
+				uni.showLoading({title: '加载数据...',mask:true});
+				
+				let reqURL = config.SERVER_URL+"m/expend/edit.do";
+				uni.request({url:reqURL,
+							data:{loginName : this.loginName,token : this.token,beanId:item.id},
+							dataType:'json',
+							method:'POST',
+							header: {'content-type': 'application/x-www-form-urlencoded'},
+							success: (res) => {
+								uni.hideLoading();
+								if (res.data.success){
+									this.beanId = res.data.bean.id;
+									this.expDate = res.data.bean.expDate;
+									this.typeAddValue = res.data.bean.fkExpendTypeId;
+									this.typeAddText = res.data.expendTypeName;
+									this.typeAddTipClass = false;
+									this.sumAdd = res.data.bean.expSum;
+									this.remark = res.data.bean.remark;
+								}else{
+									uni.showToast({title:'加载失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
+								}
+							},fail: (res) => {
+								uni.hideLoading();
+								uni.showToast({title:'加载失败！',icon:'none',duration:config.DURATION});
+							},complete: (res) => {
+							}
+						});
+			},
+			clearAddForm(){// 清空添加区域表单
+			    this.beanId = '';
+				this.clearType("typeAdd");
+				this.sumAdd='';
+				this.remark='';
+			},
+			deleteData(e,item){// 删除数据事件
 				uni.showModal({
 					title: '提示',
 					content: '确定删除吗？',
 					success: (res) => {
-						if (res.confirm) {
+						if (res.confirm) {// 确定删除
 							uni.showLoading({title: '正在删除...',mask:true});
 							
 							let reqURL = config.SERVER_URL+"m/expend/delete.do";
@@ -354,30 +358,129 @@
 										method:'POST',
 										header: {'content-type': 'application/x-www-form-urlencoded'},
 										success: (res) => {
+											uni.hideLoading();
 											if (res.data.success){
-												uni.showToast({title:'删除成功！',icon:'none',duration:this.duration});
+												uni.showToast({title:'删除成功！',icon:'none',duration:config.DURATION});
 												this.loadList(null,'query');
 											}else{
-												uni.showToast({title:'删除失败！'+res.data.msg,icon:'none',duration:this.duration+5000});
+												uni.showToast({title:'删除失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
 											}
 										},fail: (res) => {
-											uni.showToast({title:'删除失败！',icon:'none',duration:this.duration+2000});
-										},complete: (res) => {
 											uni.hideLoading();
+											uni.showToast({title:'删除失败！',icon:'none',duration:config.DURATION});
+										},complete: (res) => {
 										}
 									});
-						} else if (res.cancel) {
+						} else if (res.cancel) {// 取消删除
 							
 						}
 					}
 				});
 			},
-			clearAddForm(){
-				this.clearType("typeAdd");
-				this.sumAdd='';
-				this.remark='';
+			viewData(e,item){// 跳转到详情页面
+				uni.navigateTo({
+				    url: 'expend-detail?beanId='+item.id
+				});
 			},
-			clearType(type){
+			/* toLoginPage(){// 跳转到登录页面  url: '../../login/login'
+				uni.navigateTo({
+				    url: '../../user/login'
+				});
+			}, */
+			trigerCollapse(layout) {// 控制面板收缩
+			    if (layout=="form"){
+					this.layout.form.show = !this.layout.form.show;
+				}
+			},
+			// 日期相关方法开始
+			bindDateChange: function(e,elementId) {// 日期确定事件 
+				if ("expDate"==elementId){
+					this.expDate = e.target.value;
+				}else if ("expDateStart"==elementId){
+					this.expDateStart = e.target.value;
+				}else if ("expDateEnd"==elementId){
+					this.expDateEnd = e.target.value;
+				}
+			},
+			cancelDate:function (e,id){// 日期取消事件
+				// 日期不能取消
+				/* if ("expDate"==id){
+					this.expDateTip = true;
+					this.expDate = this.datePlaceholder;
+				}else{
+					
+				} */
+			},
+			getDate(type) {
+				const date = new Date();
+					
+				let year = date.getFullYear();
+				let month = date.getMonth() + 1;
+				let day = date.getDate();
+					
+				if (type === 'start') {
+					year = year - 60;
+				} else if (type === 'end') {
+					year = year + 2;
+				}
+				month = month > 9 ? month : '0' + month;;
+				day = day > 9 ? day : '0' + day;
+					
+				return `${year}-${month}-${day}`;
+			},
+			// 日期相关方法结束
+			loadType(){
+				let reqURL = config.SERVER_URL+"m/expendType/loadTreeData.do?fieldMap=value:id,label:expend_type_name,parentId:fk_parent_id&treeRootVal=-1&treeFlag=expendType&resType=map&multiSelect=false";
+				uni.request({url:reqURL,
+							data:{loginName : this.loginName,token : this.token},
+							dataType:'json',
+							method:'POST',
+							header: {'content-type': 'application/x-www-form-urlencoded'},
+							success: (res) => {
+								if (res.data!=null && res.data!=undefined){
+									this.typeValueArray = res.data;
+								}else{
+									uni.showToast({title:'加载支出类型失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
+								}
+							},fail: (res) => {
+								uni.showToast({title:'加载支出类型失败！',icon:'none',duration:config.DURATION});
+							},complete: (res) => {
+							}
+					});
+			},
+			selectType(e,ref) {// 支出类型框点击事件
+				uni.hideKeyboard();
+				if (this.typeValueArray==undefined || this.typeValueArray==null || this.typeValueArray.length==0){
+					uni.showToast({title:'您还没有配置支出类型！请在"设置"中生成类型或登录管理后台配置类型！',icon:'none',duration:config.DURATION_LONG});
+					return;
+				}
+				if ("typeAdd"==ref){
+					this.$refs.typeAddPicker.show();
+					
+				}else if ("typeQuery"==ref){
+					this.$refs.typeQueryPicker.show();
+				}
+			},
+			typeOnConfirm(e,elementId) {// 支出类型确定事件
+				// console.log("JSON.stringify(e)："+JSON.stringify(e));
+				let selectedObj = this.typeValueArray[e.index[0]].children[e.index[1]];
+				let selectedVal = selectedObj.value;
+				let selectedLabel = selectedObj.label;
+				
+				if ("typeAdd"==elementId){
+					this.typeAddValue = selectedVal;
+					this.typeAddText = selectedLabel;
+					this.typeAddTipClass = false;
+				}else if ("typeQuery"==elementId){
+					this.typeQueryValue = selectedVal;
+					this.typeQueryText = selectedLabel;
+					this.typeQueryTipClass = false;
+				}
+			},
+			typeOnCancel(e,elementId) {// 支出类型取消事件
+				this.clearType(elementId);
+			},
+			clearType(type){// 清空支出类型的值
 				if ("typeAdd"==type){
 					this.typeAddValue = '';
 					this.typeAddText = this.typeTip;
@@ -387,10 +490,8 @@
 					this.typeQueryText = this.typeTip;
 					this.typeQueryTipClass = true;
 				}
-			},toLoginPage(){
-				uni.navigateTo({
-				    url: '../../login/login'
-				});
+			},
+			sumBlur(e,eleId){// 金额失去焦点
 			}
 		},
 		onBackPress() {
@@ -412,11 +513,19 @@
 			}
 		},
         onLoad() {
-			if (!this.hasLogin) {
-			    this.toLoginPage();
+        },
+		onShow(){
+			if (!this.hasLogin){
+				this.listShowNoDataTip = true;
+				appCommon.toLoginPage();
+			}else{
+				this.loadType();// 加载支出类型
 			}
-			this.loadList(null,"query");
-        }
+			
+			if (this.hasLogin && !this.list.hasLoadedData) {
+				this.loadList(null,"query");
+			}
+		}
     }
 </script>
 
