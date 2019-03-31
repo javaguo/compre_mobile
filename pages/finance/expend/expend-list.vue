@@ -114,6 +114,8 @@
 			const currentDate = this.getDate({
 				format: true
 			});
+			const startDate = this.getDate('start');
+			const endDate = this.getDate('end');
 			const constTypeTip = "支出类型";// 只在下面的return块里使用
 			const constSumMinVal = 0;
 			const constSumMaxVal = 100000000;
@@ -121,8 +123,8 @@
 				beanId:'',
 				// 日期相关
 				expDate: currentDate,
-				expDateStart: currentDate,
-				expDateEnd: currentDate,
+				expDateStart: startDate,
+				expDateEnd: endDate,
 				// 类型级联公共属性
 				typeValueArray: [],
 				typeMode: 'multiLinkageSelector',
@@ -419,9 +421,7 @@
 				let day = date.getDate();
 					
 				if (type === 'start') {
-					year = year - 60;
-				} else if (type === 'end') {
-					year = year + 2;
+					day=1;
 				}
 				month = month > 9 ? month : '0' + month;;
 				day = day > 9 ? day : '0' + day;
