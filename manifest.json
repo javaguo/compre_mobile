@@ -1,5 +1,5 @@
 {
-    "name" : "小记",
+    "name" : "点记",
     "appid" : "__UNI__535411E",
     "description" : "记录收支，可自主配置收支类型等。",
     "versionName" : "1.0.0",
@@ -45,10 +45,10 @@
             },
             "icons" : {
                 "android" : {
-                    "mdpi" : "C:/Users/lee/Desktop/图标/drawable-mdpi/ic_launcher.png",
-                    "ldpi" : "C:/Users/lee/Desktop/图标/drawable-mdpi/ic_launcher.png",
-                    "hdpi" : "C:/Users/lee/Desktop/图标/drawable-hdpi/ic_launcher.png",
-                    "xhdpi" : "C:/Users/lee/Desktop/图标/drawable-xhdpi/ic_launcher.png"
+                    "mdpi" : "H:/编程/项目/android项目/理财宝图标/drawable-mdpi/ic_launcher.png",
+                    "ldpi" : "H:/编程\\项目/android项目/理财宝图标/drawable-mdpi/ic_launcher.png",
+                    "hdpi" : "H:/编程/项目/android项目/理财宝图标/drawable-hdpi/ic_launcher.png",
+                    "xhdpi" : "H:/编程\\项目/android项目/理财宝图标/drawable-xhdpi/ic_launcher.png"
                 }
             }
         }

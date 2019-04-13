@@ -438,7 +438,9 @@
 							header: {'content-type': 'application/x-www-form-urlencoded'},
 							success: (res) => {
 								if (res.data!=null && res.data!=undefined){
-									this.typeValueArray = res.data;
+									if (res.data.length>0){
+										this.typeValueArray = res.data;
+									}
 								}else{
 									uni.showToast({title:'加载支出类型失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
 								}
@@ -462,7 +464,6 @@
 				}
 			},
 			typeOnConfirm(e,elementId) {// 支出类型确定事件
-				// console.log("JSON.stringify(e)："+JSON.stringify(e));
 				let selectedObj = this.typeValueArray[e.index[0]].children[e.index[1]];
 				let selectedVal = selectedObj.value;
 				let selectedLabel = selectedObj.label;
