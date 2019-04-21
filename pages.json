@@ -26,9 +26,9 @@
                 "navigationBarTitleText": "支出详情"
             }
         },{
-            "path": "pages/setting/setting",
+            "path": "pages/more/more",
             "style": {
-                "navigationBarTitleText": "设置"
+                "navigationBarTitleText": "更多"
             }
         }, {
             "path": "pages/user/login",
@@ -72,8 +72,8 @@
             "iconPath": "static/img/index/expend.png",
             "selectedIconPath": "static/img/index/expendHL.png"
         },{
-            "pagePath": "pages/setting/setting",
-            "text": "设置",
+            "pagePath": "pages/more/more",
+            "text": "更多",
             "iconPath": "static/img/index/more.png",
             "selectedIconPath": "static/img/index/moreHL.png"
         }, {

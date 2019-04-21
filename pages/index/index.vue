@@ -120,9 +120,9 @@
 											case 3:
 												break;
 											case 4:
-												this.borrowedSumAll = row.value1;this.lendSumAll = row.value2;this.borrowLendBalanceAll = row.value2A;
 												break;
 											case 5:
+												this.borrowedSumAll = row.value1;this.lendSumAll = row.value2;this.borrowLendBalanceAll = row.value2A;
 												break;						
 											default:
 												break;

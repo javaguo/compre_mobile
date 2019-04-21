@@ -143,7 +143,7 @@
         },
 		onShow(){
 			if (!config.hasLogin){
-				this.autoLogin();	
+				// this.autoLogin(); // 怀疑此处自动登录可能导致白屏或闪退，注掉实际观察验证一段时间
 			}
 		},
         onLoad() {

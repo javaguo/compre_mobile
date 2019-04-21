@@ -4,7 +4,14 @@
             <button type="primary" class="primary" @tap="copyReceiptsTypeFromSys">生成默认收入类型</button>
         </view>
 		<view class="btn-row">
+		    <button type="primary" class="primary" @tap="navReceiptsType">自定义收入类型</button>
+		</view>
+		
+		<view class="btn-row">
 		    <button type="primary" class="primary" @tap="copyExpendTypeFromSys">生成默认支出类型</button>
+		</view>
+		<view class="btn-row">
+		    <button type="primary" class="primary" @tap="navExpendType">自定义支出类型</button>
 		</view>
     </view>
 </template>
@@ -52,6 +59,12 @@
 						}
 					}
 				});
+			},
+			navReceiptsType(){
+				uni.showToast({title:'开发中！请先通过PC端维护自定义收入类型 ！',icon:'none',duration:config.DURATION_LONG});
+			},
+			navExpendType(){
+				uni.showToast({title:'开发中！请先通过PC端维护自定义支出类型！',icon:'none',duration:config.DURATION_LONG});
 			},
 			copyExpendTypeFromSys(){
 				uni.showModal({
