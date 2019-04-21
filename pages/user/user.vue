@@ -41,8 +41,8 @@
                 this.logoutDestroy();
 				
 				// 清除登录名、密码缓存
-				uni.removeStorage({key: config.KEY_LOGIN_NAME,success: function (res) {}});
-				uni.removeStorage({key: config.KEY_PASSWORD_ENCRY,success: function (res) {}});
+				// uni.removeStorage({key: config.KEY_LOGIN_NAME,success: function (res) {}});
+				// uni.removeStorage({key: config.KEY_PASSWORD_ENCRY,success: function (res) {}});
 				
                 /**
                  * 如果需要强制登录跳转回登录页面

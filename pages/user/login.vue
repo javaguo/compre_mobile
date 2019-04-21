@@ -79,12 +79,20 @@
 						uni.setStorage({
 							key: config.KEY_LOGIN_NAME,
 							data: this.loginName,
-							success:()=>{}
+							success:()=>{},
+							complete:()=>{}
+						});
+						uni.setStorage({
+							key: config.KEY_PASSWORD,
+							data: this.password,
+							success:()=> {},
+							complete:()=>{}
 						});
 						uni.setStorage({
 							key: config.KEY_PASSWORD_ENCRY,
 							data: this.passwordEncry,
-							success:()=> {}
+							success:()=> {},
+							complete:()=>{}
 						});
 						
 						if (res.data.success){
@@ -101,16 +109,27 @@
 					}
 				});
 			},
-			autoLogin(){// 自动登录
+			autoFillLoginInfo(){// 自动填充登录信息
 				uni.getStorage({key: config.KEY_LOGIN_NAME,
 								success:(res)=> {
 									this.loginName = res.data;
+								},fail:(res)=> {
+								},complete:(res)=> {
 								}});
+				uni.getStorage({key: config.KEY_PASSWORD,
+								success:(res)=> {
+									this.password = res.data;
+								},fail:(res)=> {
+								},complete:(res)=> {
+								}});	
 				uni.getStorage({key: config.KEY_PASSWORD_ENCRY,
 								success:(res)=> {
 									this.passwordEncry = res.data;
+								},fail:(res)=> {
+								},complete:(res)=> {
 								}});
-								
+			},
+			autoLogin(){// 自动登录
 				if (this.loginName!=null && this.loginName!=''
 					&& this.passwordEncry!=null && this.passwordEncry!=''){
 					this.login();
@@ -142,6 +161,7 @@
 			}
         },
 		onShow(){
+			this.autoFillLoginInfo();
 			if (!config.hasLogin){
 				// this.autoLogin(); // 怀疑此处自动登录可能导致白屏或闪退，注掉实际观察验证一段时间
 			}

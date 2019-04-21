@@ -89,7 +89,6 @@
 		computed: mapState(['loginName','hasLogin','token']),
 		methods: {
 		    statistics(){
-				console.log("加载统计信息。。。");
 				let reqURL = config.SERVER_URL+"m/statistics/searchData.do";
 				uni.request({url:reqURL,
 							data:{loginName : this.loginName,token : this.token,page:1,limit:10},
@@ -97,7 +96,6 @@
 							method:'POST',
 							header: {'content-type': 'application/x-www-form-urlencoded'},
 							success: (res) => {
-								console.log(JSON.stringify(res));
 								if (!res.data.success){
 									uni.showToast({title:'加载统计信息失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
 									return ;

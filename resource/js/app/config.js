@@ -2,6 +2,7 @@ const SERVER_URL = 'http://localhost:8101/compre/';
 const TEST_LOGIN_NAME = 'zjg';
 const TEST_LOGIN_PWD = 'c696360395cb2338d78f9682de683f7e';
 const KEY_LOGIN_NAME = 'loginName';
+const KEY_PASSWORD = 'password';
 const KEY_PASSWORD_ENCRY = 'passwordEncry';
 const LOGINSOURCE = 'M';
 const PAGE_SIZE = 10;
@@ -19,6 +20,7 @@ export default {
 	TEST_LOGIN_NAME,
 	TEST_LOGIN_PWD,
 	KEY_LOGIN_NAME,
+	KEY_PASSWORD,
 	KEY_PASSWORD_ENCRY,
 	
 	PAGE_SIZE,

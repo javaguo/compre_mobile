@@ -6,6 +6,9 @@
     "versionCode" : "100",
     "transformPx" : true,
     "app-plus" : {
+		"compatible":{
+			"ignoreVersion":true
+		},
         /* 5+App特有相关 */
         "modules" : {},
         /* 模块配置 */
