@@ -12,7 +12,7 @@
 				<view class="text text_value uni-ellipsis" >{{expendSumAll}}</view>
 			</view>
 			<view class="uni-flex uni-row">
-				<view class="text text_label" >差额：</view>
+				<view class="text text_label" >余额：</view>
 				<view class="text text_value uni-ellipsis" >{{balanceAll}}</view>
 			</view>
 			
@@ -26,7 +26,7 @@
 				<view class="text text_value uni-ellipsis" >{{expendSumYear}}</view>
 			</view>
 			<view class="uni-flex uni-row">
-				<view class="text text_label" >差额：</view>
+				<view class="text text_label" >余额：</view>
 				<view class="text text_value uni-ellipsis" >{{balanceYear}}</view>
 			</view>
 			
@@ -40,7 +40,7 @@
 				<view class="text text_value uni-ellipsis" >{{expendSumMonth}}</view>
 			</view>
 			<view class="uni-flex uni-row">
-				<view class="text text_label" >差额：</view>
+				<view class="text text_label" >余额：</view>
 				<view class="text text_value uni-ellipsis" >{{balanceMonth}}</view>
 			</view>
 			

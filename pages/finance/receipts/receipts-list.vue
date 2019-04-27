@@ -64,6 +64,11 @@
 		
 		<!-- 列表区域开始 -->
         <view class="">
+			<view class="uni-flex uni-row list_top" style="justify-content: space-between;">
+				<view class = "list_title">列表：</view>
+				<view class = "statistic_sum">总计：{{listSum}}</view>
+			</view>
+			
 			<scroll-view class="com_list_scroll" scroll-y="true" @scrolltolower="loadMoreData">
 			<view v-show="listShowNoDataTip" class="com_list com_list_tip">暂无数据！</view>
             <block v-for="(item,index) in list.data" :key="index">
@@ -151,6 +156,7 @@
 				remark: '',
 				remarkQuery: '',
 				
+				listSum: '',
 				// lists: [],
 				list:{// 列表展示使用
 					data:[],
@@ -178,6 +184,28 @@
 		},
 		computed: mapState(['loginName','hasLogin','token']),
 		methods: {
+			statisticSum(){
+				let reqURL = config.SERVER_URL+"m/receipts/statisticSum.do";
+				uni.request({url:reqURL,
+							data:{loginName : this.loginName,token : this.token,
+								  recDateStart:this.recDateStart,recDateEnd:this.recDateEnd,fkReceiptsTypeId:this.typeQueryValue,
+								  expSumStart:this.sumStart,expSumEnd:this.sumEnd,remark:this.remarkQuery},
+							dataType:'json',
+							method:'POST',
+							header: {'content-type': 'application/x-www-form-urlencoded'},
+							success: (res) => {
+								if (res.data.success){
+									if (res.data.statisticSum!=null && res.data.statisticSum!=""){
+										this.listSum = res.data.statisticSum;	
+									}else{
+										this.listSum = "-";
+									}
+								}
+							},fail: (res) => {
+							},complete: (res) => {
+							}
+						});
+			},
 			loadList(e,opeType){
 				if ("query"==opeType){// 点击查询
 					this.list.data = [];
@@ -199,6 +227,10 @@
 				if (this.sumStart!=null && this.sumStart!='' && this.sumEnd!=null && this.sumEnd!='' && this.sumStart>this.sumEnd){
 					uni.showToast({title:'查询最小金额不能大于最大金额！',icon:'none',duration:config.DURATION_MIDDLE});
 					return;
+				}
+				
+				if ("query"==opeType){// 只有点击查询时执行统计
+					this.statisticSum();
 				}
 				
 				// 加载列表
