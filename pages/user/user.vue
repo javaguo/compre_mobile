@@ -4,10 +4,10 @@
 			<view class="text text_label" >账号：</view>
 			<view class="text text_value" >{{loginName}}</view>
 		</view>
-		<view class="uni-flex uni-row">
+		<!-- <view class="uni-flex uni-row">
 			<view class="text text_label" >用户名：</view>
 			<view class="text text_value" >{{userName}}</view>
-		</view>
+		</view> -->
 		
         <view class="btn-row">
             <button v-if="!hasLogin" type="primary" class="primary" @tap="bindLogin">登录</button>

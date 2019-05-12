@@ -49,7 +49,7 @@
 		<view class="com_line com_line_color2"></view>
 		
 		<view class="uni-flex uni-row list_top" style="justify-content: space-between;">
-			<view class="list_top_title">类型列表：</view>
+			<view class="list_top_title">列表：</view>
 			<view class="list_top_icon">
 				<image class="list-icon_img" src="../../../static/img/common/refresh32.png" @click="loadList($event, 'query')"></image>
 			</view>
