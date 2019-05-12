@@ -148,7 +148,7 @@
                     uni.navigateBack();
                 } */
 				uni.reLaunch({
-				    url: '/pages/finance/expend/expend-list',
+				    url: '/pages/account/expend/expend-list',
 				});
 
             },

@@ -2,12 +2,14 @@
     <view class="com_page com_layout_column">
         <page-head :title="title"></page-head>
 		
+	<!-- 固定高度区域开始 -->
+	<view id="fix_height_view">
 		<!-- 表单添加区域开始 -->
-		<view class="com_form com_form_bottom" >
+		<view class="com_form" >
 			<form>
 			<view class="com_form_row">
-				<picker mode="date" name="recDate" :value="recDate"  @change="bindDateChange($event,'recDate')" @cancel="cancelDate($event,'recDate')">
-					<view class="com_form_input com_form_date" >{{recDate}}</view>
+				<picker mode="date" name="expDate" :value="expDate"  @change="bindDateChange($event,'expDate')" @cancel="cancelDate($event,'expDate')">
+					<view class="com_form_input com_form_date" >{{expDate}}</view>
 				</picker>
 				
 				<view class="com_form_input com_form_type" :class="typeAddTipClass ? 'com_placeholder' : ''"
@@ -30,15 +32,17 @@
 		</view>
 		<!-- 表单添加区域结束 -->
 		
+		<view class="com_line com_line_color2"></view>
+		
 		<!-- 列表查询区域开始 -->
 		<view class="com_form" >
 			<view class="com_form_row">
-				<picker mode="date" name="recDateStart" :value="recDateStart"  @change="bindDateChange($event,'recDateStart')" >
-					<view class="com_form_input com_form_date" >{{recDateStart}}</view>
+				<picker mode="date" name="expDateStart" :value="expDateStart"  @change="bindDateChange($event,'expDateStart')" >
+					<view class="com_form_input com_form_date" >{{expDateStart}}</view>
 				</picker>
 				<view class="com_form_text">-</view>
-				<picker mode="date" name="recDateEnd" :value="recDateEnd"  @change="bindDateChange($event,'recDateEnd')" >
-					<view class="com_form_input com_form_date" >{{recDateEnd}}</view>
+				<picker mode="date" name="expDateEnd" :value="expDateEnd"  @change="bindDateChange($event,'expDateEnd')" >
+					<view class="com_form_input com_form_date" >{{expDateEnd}}</view>
 				</picker>
 				
 				<view class="com_form_input com_form_type" :class="typeQueryTipClass ? 'com_placeholder' : ''"
@@ -62,42 +66,43 @@
 		</view>
 		<!-- 列表查询区域结束 -->
 		
-		<!-- 列表区域开始 -->
-        <view class="">
-			<view class="uni-flex uni-row list_top" style="justify-content: space-between;">
-				<view class = "list_title">列表：</view>
-				<view class = "statistic_sum">总计：{{listSum}}</view>
-			</view>
-			
-			<scroll-view class="com_list_scroll" scroll-y="true" @scrolltolower="loadMoreData">
-			<view v-show="listShowNoDataTip" class="com_list com_list_tip">暂无数据！</view>
-            <block v-for="(item,index) in list.data" :key="index">
-                    <view class="com_list" >
-						<view class="com_list_row com_list_row_top" >
-							<view class="list_text list_date">{{item.recDate}}</view>
-							<view class="list_text list_type1 uni-ellipsis">{{item.receiptsParentTypeName}}</view>
-							<view class="list_text list_type2 uni-ellipsis">{{item.fkReceiptsTypeId}}</view>
-							<view class="list_text list_sum uni-ellipsis">{{item.recSum}}</view>
-						</view>
-						<view class="com_list_row">
-							<view class="list_text list_row2_column1">备注：</view>
-							<view class="list_text list_row2_column2 uni-ellipsis" >{{item.remark}}</view>
-							<view class="list_icon">
-								<image class="list-icon_img" src="../../../static/img/common/editor32.png" @click="editData($event,item)"></image>
-							</view>
-							<view class="list_icon">
-								<image class="list-icon_img" src="../../../static/img/common/delete32.png" @click="deleteData($event,item)"></image>
-							</view>
-							<view class="list_icon">
-								<image class="list-icon_img" src="../../../static/img/common/view32.png" @click="viewData($event,item)"></image>
-							</view>
-						</view>	
-                    </view>
-            </block>
-			</scroll-view>
+		<view class="uni-flex uni-row list_top" style="justify-content: space-between;">
+			<view class = "list_top_title">列表：</view>
+			<view class = "list_top_statistic_sum">总计：{{listSum}}</view>
 		</view>
-		<!-- 列表区域结束 -->
-    </view>
+	</view>
+	<!-- 固定高度区域结束 -->	
+		
+	<!-- 列表区域开始 -->
+	<scroll-view :style="{height:list_scroll_height+'px'}" scroll-y="true" @scrolltolower="loadMoreData">
+		<view v-show="listShowNoDataTip" class="com_list com_list_tip">暂无数据！</view>
+		
+        <block v-for="(item,index) in list.data" :key="index">
+                <view class="com_list" >
+					<view class="com_list_row com_list_row_top" >
+						<view class="list_text list_date">{{item.expDate}}</view>
+						<view class="list_text list_type1 uni-ellipsis">{{item.expendParentTypeName}}</view>
+						<view class="list_text list_type2 uni-ellipsis">{{item.fkExpendTypeId}}</view>
+						<view class="list_text list_sum uni-ellipsis">{{item.expSum}}</view>
+					</view>
+					<view class="com_list_row">
+						<view class="list_text list_row2_column1">备注：</view>
+						<view class="list_text list_row2_column2 uni-ellipsis" >{{item.remark}}</view>
+						<view class="list_icon">
+							<image class="list-icon_img" src="../../../static/img/common/editor32.png" @click="editData($event,item)"></image>
+						</view>
+						<view class="list_icon">
+							<image class="list-icon_img" src="../../../static/img/common/delete32.png" @click="deleteData($event,item)"></image>
+						</view>
+						<view class="list_icon">
+							<image class="list-icon_img" src="../../../static/img/common/view32.png" @click="viewData($event,item)"></image>
+						</view>
+					</view>	
+                </view>
+        </block>
+	</scroll-view>
+	<!-- 列表区域结束 -->
+</view>
 </template>
 
 <script>
@@ -121,15 +126,15 @@
 			});
 			const startDate = this.getDate('start');
 			const endDate = this.getDate('end');
-			const constTypeTip = "收入类型";// 只在下面的return块里使用
+			const constTypeTip = "支出类型";// 只在下面的return块里使用
 			const constSumMinVal = 0;
 			const constSumMaxVal = 100000000;
             return {
 				beanId:'',
 				// 日期相关
-				recDate: currentDate,
-				recDateStart: startDate,
-				recDateEnd: endDate,
+				expDate: currentDate,
+				expDateStart: startDate,
+				expDateEnd: endDate,
 				// 类型级联公共属性
 				typeValueArray: [],
 				typeMode: 'multiLinkageSelector',
@@ -156,6 +161,7 @@
 				remark: '',
 				remarkQuery: '',
 				
+				list_scroll_height:'',
 				listSum: '',
 				// lists: [],
 				list:{// 列表展示使用
@@ -184,11 +190,14 @@
 		},
 		computed: mapState(['loginName','hasLogin','token']),
 		methods: {
+			/**
+			 * 统计列表总和
+			 */
 			statisticSum(){
-				let reqURL = config.SERVER_URL+"m/receipts/statisticSum.do";
+				let reqURL = config.SERVER_URL+"m/expend/statisticSum.do";
 				uni.request({url:reqURL,
 							data:{loginName : this.loginName,token : this.token,
-								  recDateStart:this.recDateStart,recDateEnd:this.recDateEnd,fkReceiptsTypeId:this.typeQueryValue,
+								  expDateStart:this.expDateStart,expDateEnd:this.expDateEnd,fkExpendTypeId:this.typeQueryValue,
 								  expSumStart:this.sumStart,expSumEnd:this.sumEnd,remark:this.remarkQuery},
 							dataType:'json',
 							method:'POST',
@@ -206,6 +215,11 @@
 							}
 						});
 			},
+			/**
+			 * 加载列表
+			 * @param {Object} e
+			 * @param {Object} opeType  查询方式：点击查询/加载更多
+			 */
 			loadList(e,opeType){
 				if ("query"==opeType){// 点击查询
 					this.list.data = [];
@@ -219,7 +233,7 @@
 					return;
 				}
 				
-				if (this.recDateStart!=null && this.recDateEnd !=null && this.recDateStart>this.recDateEnd){
+				if (this.expDateStart!=null && this.expDateEnd !=null && this.expDateStart>this.expDateEnd){
 					uni.showToast({title:'查询开始日期不能大于结束日期！',icon:'none',duration:config.DURATION_MIDDLE});
 					return;
 				}
@@ -235,10 +249,10 @@
 				
 				// 加载列表
 				uni.showLoading({title: '加载中...',mask:true});
-				let reqURL = config.SERVER_URL+"m/receipts/searchData.do";
+				let reqURL = config.SERVER_URL+"m/expend/searchData.do";
 				uni.request({url:reqURL,
 							data:{loginName : this.loginName,token : this.token,page:this.page,limit:config.PAGE_SIZE,
-								  recDateStart:this.recDateStart,recDateEnd:this.recDateEnd,fkReceiptsTypeId:this.typeQueryValue,
+								  expDateStart:this.expDateStart,expDateEnd:this.expDateEnd,fkExpendTypeId:this.typeQueryValue,
 								  expSumStart:this.sumStart,expSumEnd:this.sumEnd,remark:this.remarkQuery},
 							dataType:'json',
 							method:'POST',
@@ -279,28 +293,28 @@
 				this.remarkQuery = '';
 			},
 			save(){// 保存数据
-				if ( this.recDate==null || this.recDate=='' || this.recDate.length==0){
-					uni.showToast({title:'请选择收入日期！',icon:'none',duration:config.DURATION});
+				if ( this.expDate==null || this.expDate=='' || this.expDate.length==0){
+					uni.showToast({title:'请选择支出日期！',icon:'none',duration:config.DURATION});
 					return;
 				}
 				
 				if ( this.typeAddValue.length==0){
-					uni.showToast({title:'请选择收入类型！',icon:'none',duration:config.DURATION});
+					uni.showToast({title:'请选择支出类型！',icon:'none',duration:config.DURATION});
 					return;
 				}
 				
 				if (this.sumAdd==null || this.sumAdd==''){
-					uni.showToast({title:'请填写收入金额！',icon:'none',duration:config.DURATION});
+					uni.showToast({title:'请填写支出金额！',icon:'none',duration:config.DURATION});
 					return;
 				}
 				/* if (!vSum(this.sumAdd) || this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
-					uni.showToast({title:'请填写正确的金额！收入金额应大于'+
+					uni.showToast({title:'请填写正确的金额！支出金额应大于'+
 										this.sumMinVal+'且小于'+this.sumMaxValStr,
 									icon:'none',duration:this.duration+2000});
 					return;
 				} */
 				if (this.sumAdd<=this.sumMinVal || this.sumAdd>=this.sumMaxVal ){
-					uni.showToast({title:'请填写正确的金额！收入金额应大于'+
+					uni.showToast({title:'请填写正确的金额！支出金额应大于'+
 										this.sumMinVal+'且小于'+this.sumMaxValStr,
 									icon:'none',duration:config.DURATION_MIDDLE});
 					return;
@@ -310,14 +324,14 @@
 				let tempURL = '';
 				let opeTypeTip = '';
 				let reqParam = {loginName : this.loginName,token : this.token,
-									recDate:this.recDate,fkReceiptsTypeId:this.typeAddValue,
-									recSum:this.sumAdd,remark:this.remark};
+									expDate:this.expDate,fkExpendTypeId:this.typeAddValue,
+									expSum:this.sumAdd,remark:this.remark};
 				if (this.beanId!=null && this.beanId!=''){// 编辑
-					tempURL = config.SERVER_URL+"m/receipts/update.do";	
+					tempURL = config.SERVER_URL+"m/expend/update.do";	
 					reqParam.id = this.beanId;
 					opeTypeTip = '修改';
 				}else{// 添加
-					tempURL = config.SERVER_URL+"m/receipts/save.do";
+					tempURL = config.SERVER_URL+"m/expend/save.do";
 					opeTypeTip = '保存';
 				}
 				uni.request({url:tempURL,
@@ -336,7 +350,7 @@
 								}
 							},fail: (res) => {
 								uni.hideLoading();
-								uni.showToast({title:opeTypeTip+'收入请求失败！',icon:'none',duration:config.DURATION});
+								uni.showToast({title:opeTypeTip+'支出请求失败！',icon:'none',duration:config.DURATION});
 							},complete: (res) => {
 							}
 						});
@@ -345,7 +359,7 @@
 			editData(e,item){// 编辑数据事件
 				uni.showLoading({title: '加载数据...',mask:true});
 				
-				let reqURL = config.SERVER_URL+"m/receipts/edit.do";
+				let reqURL = config.SERVER_URL+"m/expend/edit.do";
 				uni.request({url:reqURL,
 							data:{loginName : this.loginName,token : this.token,beanId:item.id},
 							dataType:'json',
@@ -355,11 +369,11 @@
 								uni.hideLoading();
 								if (res.data.success){
 									this.beanId = res.data.bean.id;
-									this.recDate = res.data.bean.recDate;
-									this.typeAddValue = res.data.bean.fkReceiptsTypeId;
-									this.typeAddText = res.data.receiptsTypeName;
+									this.expDate = res.data.bean.expDate;
+									this.typeAddValue = res.data.bean.fkExpendTypeId;
+									this.typeAddText = res.data.expendTypeName;
 									this.typeAddTipClass = false;
-									this.sumAdd = res.data.bean.recSum;
+									this.sumAdd = res.data.bean.expSum;
 									this.remark = res.data.bean.remark;
 								}else{
 									uni.showToast({title:'加载失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
@@ -385,7 +399,7 @@
 						if (res.confirm) {// 确定删除
 							uni.showLoading({title: '正在删除...',mask:true});
 							
-							let reqURL = config.SERVER_URL+"m/receipts/delete.do";
+							let reqURL = config.SERVER_URL+"m/expend/delete.do";
 							uni.request({url:reqURL,
 										data:{loginName : this.loginName,token : this.token,ids:item.id},
 										dataType:'json',
@@ -413,7 +427,7 @@
 			},
 			viewData(e,item){// 跳转到详情页面
 				uni.navigateTo({
-				    url: 'receipts-detail?beanId='+item.id
+				    url: 'expend-detail?beanId='+item.id
 				});
 			},
 			/* toLoginPage(){// 跳转到登录页面  url: '../../login/login'
@@ -428,19 +442,19 @@
 			},
 			// 日期相关方法开始
 			bindDateChange: function(e,elementId) {// 日期确定事件 
-				if ("recDate"==elementId){
-					this.recDate = e.target.value;
-				}else if ("recDateStart"==elementId){
-					this.recDateStart = e.target.value;
-				}else if ("recDateEnd"==elementId){
-					this.recDateEnd = e.target.value;
+				if ("expDate"==elementId){
+					this.expDate = e.target.value;
+				}else if ("expDateStart"==elementId){
+					this.expDateStart = e.target.value;
+				}else if ("expDateEnd"==elementId){
+					this.expDateEnd = e.target.value;
 				}
 			},
 			cancelDate:function (e,id){// 日期取消事件
 				// 日期不能取消
-				/* if ("recDate"==id){
-					this.recDateTip = true;
-					this.recDate = this.datePlaceholder;
+				/* if ("expDate"==id){
+					this.expDateTip = true;
+					this.expDate = this.datePlaceholder;
 				}else{
 					
 				} */
@@ -462,9 +476,10 @@
 			},
 			// 日期相关方法结束
 			loadType(){
-				let reqURL = config.SERVER_URL+"m/receiptsType/loadTreeData.do?fieldMap=value:id,label:receipts_type_name,parentId:fk_parent_id&treeRootVal=-1&treeFlag=receiptsType&resType=map&multiSelect=false";
+				let d = new Date();
+				let reqURL = config.SERVER_URL+"m/expendType/loadTreeData.do?fieldMap=value:id,label:expend_type_name,parentId:fk_parent_id&treeRootVal=-1&treeFlag=expendType&resType=map&multiSelect=false";
 				uni.request({url:reqURL,
-							data:{loginName : this.loginName,token : this.token},
+							data:{loginName : this.loginName,token : this.token,t: d.getTime()},
 							dataType:'json',
 							method:'POST',
 							header: {'content-type': 'application/x-www-form-urlencoded'},
@@ -474,27 +489,28 @@
 										this.typeValueArray = res.data;
 									}
 								}else{
-									uni.showToast({title:'加载收入类型失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
+									uni.showToast({title:'加载支出类型失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
 								}
 							},fail: (res) => {
-								uni.showToast({title:'加载收入类型失败！',icon:'none',duration:config.DURATION});
+								uni.showToast({title:'加载支出类型失败！',icon:'none',duration:config.DURATION});
 							},complete: (res) => {
 							}
 					});
 			},
-			selectType(e,ref) {// 收入类型框点击事件
+			selectType(e,ref) {// 支出类型框点击事件
 				uni.hideKeyboard();
 				if (this.typeValueArray==undefined || this.typeValueArray==null || this.typeValueArray.length==0){
-					uni.showToast({title:'您还没有配置收入类型！请在"设置"中生成类型或登录管理后台配置类型！',icon:'none',duration:config.DURATION_LONG});
+					uni.showToast({title:'您还没有配置支出类型！请在"设置"中生成类型或登录管理后台配置类型！',icon:'none',duration:config.DURATION_LONG});
 					return;
 				}
 				if ("typeAdd"==ref){
 					this.$refs.typeAddPicker.show();
+					
 				}else if ("typeQuery"==ref){
 					this.$refs.typeQueryPicker.show();
 				}
 			},
-			typeOnConfirm(e,elementId) {// 收入类型确定事件
+			typeOnConfirm(e,elementId) {// 支出类型确定事件
 				let selectedObj = this.typeValueArray[e.index[0]].children[e.index[1]];
 				let selectedVal = selectedObj.value;
 				let selectedLabel = selectedObj.label;
@@ -509,10 +525,10 @@
 					this.typeQueryTipClass = false;
 				}
 			},
-			typeOnCancel(e,elementId) {// 收入类型取消事件
+			typeOnCancel(e,elementId) {// 支出类型取消事件
 				this.clearType(elementId);
 			},
-			clearType(type){// 清空收入类型的值
+			clearType(type){// 清空支出类型的值
 				if ("typeAdd"==type){
 					this.typeAddValue = '';
 					this.typeAddText = this.typeTip;
@@ -551,12 +567,24 @@
 				this.listShowNoDataTip = true;
 				appCommon.toLoginPage();
 			}else{
-				this.loadType();// 加载收入类型
+				this.loadType();// 加载支出类型
 			}
 			
 			if (this.hasLogin && !this.list.hasLoadedData) {
 				this.loadList(null,"query");
 			}
+		},onReady() {
+			// 计算列表滚动区域高度，使高度自适应
+			uni.getSystemInfo({
+				success: (res) =>{
+					let fix_height_view = uni.createSelectorQuery().select("#fix_height_view");
+					fix_height_view.boundingClientRect(data=>{
+						// 滚动区域高度 = 窗口高度-固定区域高度
+						this.list_scroll_height = res.windowHeight - data.height;
+					}).exec();
+				},fail:function(){
+				}
+			});
 		}
     }
 </script>

@@ -6,22 +6,32 @@
                 "navigationBarTitleText": "概览"
             }
         },{
-            "path": "pages/finance/receipts/receipts-list",
+            "path": "pages/account/receipts-type/receipts-type-list",
+            "style": {
+                "navigationBarTitleText": "收入类型"
+            }
+        },{
+            "path": "pages/account/receipts/receipts-list",
             "style": {
                 "navigationBarTitleText": "收入列表"
             }
         },{
-            "path": "pages/finance/receipts/receipts-detail",
+            "path": "pages/account/receipts/receipts-detail",
             "style": {
                 "navigationBarTitleText": "收入详情"
             }
         },{
-            "path": "pages/finance/expend/expend-list",
+            "path": "pages/account/expend-type/expend-type-list",
+            "style": {
+                "navigationBarTitleText": "支出类型"
+            }
+        },{
+            "path": "pages/account/expend/expend-list",
             "style": {
                 "navigationBarTitleText": "支出列表"
             }
         },{
-            "path": "pages/finance/expend/expend-detail",
+            "path": "pages/account/expend/expend-detail",
             "style": {
                 "navigationBarTitleText": "支出详情"
             }
@@ -62,12 +72,12 @@
             "iconPath": "static/img/index/home.png",
             "selectedIconPath": "static/img/index/homeHL.png"
         },{
-            "pagePath": "pages/finance/receipts/receipts-list",
+            "pagePath": "pages/account/receipts/receipts-list",
             "text": "收入",
             "iconPath": "static/img/index/receipts.png",
             "selectedIconPath": "static/img/index/receiptsHL.png"
         },{
-            "pagePath": "pages/finance/expend/expend-list",
+            "pagePath": "pages/account/expend/expend-list",
             "text": "支出",
             "iconPath": "static/img/index/expend.png",
             "selectedIconPath": "static/img/index/expendHL.png"

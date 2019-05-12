@@ -1,11 +1,12 @@
 const SERVER_URL = 'http://localhost:8101/compre/';
-const TEST_LOGIN_NAME = 'zjg';
-const TEST_LOGIN_PWD = 'c696360395cb2338d78f9682de683f7e';
+const TEST_LOGIN_NAME = '';
+const TEST_LOGIN_PWD = '';
 const KEY_LOGIN_NAME = 'loginName';
 const KEY_PASSWORD = 'password';
 const KEY_PASSWORD_ENCRY = 'passwordEncry';
 const LOGINSOURCE = 'M';
 const PAGE_SIZE = 10;
+const PAGE_SIZE_TYPE = 500;
 
 // 提示框显示时长
 const DURATION = 2500;
@@ -24,6 +25,7 @@ export default {
 	KEY_PASSWORD_ENCRY,
 	
 	PAGE_SIZE,
+	PAGE_SIZE_TYPE,
 	
 	DURATION,
 	DURATION_MIDDLE,

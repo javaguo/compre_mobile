@@ -61,10 +61,14 @@
 				});
 			},
 			navReceiptsType(){
-				uni.showToast({title:'开发中！请先通过PC端维护自定义收入类型 ！',icon:'none',duration:config.DURATION_LONG});
+				uni.navigateTo({
+				    url: '../account/receipts-type/receipts-type-list'
+				});
 			},
 			navExpendType(){
-				uni.showToast({title:'开发中！请先通过PC端维护自定义支出类型！',icon:'none',duration:config.DURATION_LONG});
+				uni.navigateTo({
+				    url: '../account/expend-type/expend-type-list'
+				});
 			},
 			copyExpendTypeFromSys(){
 				uni.showModal({
