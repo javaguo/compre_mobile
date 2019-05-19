@@ -3,16 +3,19 @@
         <view class="input-group">
             <view class="input-row border">
                 <text class="title">账号：</text>
-                <m-input type="text" focus clearable v-model="account" placeholder="请输入账号"></m-input>
+                <m-input type="text" focus clearable v-model.trim="loginName" placeholder="请输入账号"
+						:maxlength="loginNameMaxLength" ></m-input>
             </view>
             <view class="input-row border">
                 <text class="title">密码：</text>
-                <m-input type="password" displayable v-model="password" placeholder="请输入密码"></m-input>
+                <m-input type="password" displayable v-model.trim="password" placeholder="请输入密码"
+						:maxlength="passwordMaxLength"></m-input>
             </view>
-            <view class="input-row">
-                <text class="title">邮箱：</text>
-                <m-input type="text" clearable v-model="email" placeholder="请输入邮箱"></m-input>
-            </view>
+			<view class="input-row border">
+			    <text class="title">确认密码：</text>
+			    <m-input type="password" displayable v-model.trim="passwordConfirm" placeholder="请再次输入密码"
+						:maxlength="passwordMaxLength"></m-input>
+			</view>
         </view>
         <view class="btn-row">
             <button type="primary" class="primary" @tap="register">注册</button>
@@ -21,6 +24,9 @@
 </template>
 
 <script>
+	import config from '../../resource/js/app/config.js';
+	import md5 from '../../resource/js/plugin/md5.min.js';
+	
     import service from '../../service.js';
     import mInput from '../../components/m-input.vue';
 
@@ -30,51 +36,96 @@
         },
         data() {
             return {
-                account: '',
+                loginName: '',
                 password: '',
-                email: ''
+				passwordConfirm:'',
+				passwordEncry:'',
+				loginNameMaxLength:25,
+				passwordMaxLength:25
             }
         },
         methods: {
             register() {
-                /**
-                 * 客户端对账号信息进行一些必要的校验。
-                 * 实际开发中，根据业务需要进行处理，这里仅做示例。
-                 */
-                if (this.account.length < 5) {
+                if (this.loginName.length < 3) {
                     uni.showToast({
                         icon: 'none',
-                        title: '账号最短为 5 个字符'
+                        title: '账号最短为 3 个字符！',
+						duration:config.DURATION_MIDDLE
                     });
                     return;
                 }
                 if (this.password.length < 6) {
                     uni.showToast({
                         icon: 'none',
-                        title: '密码最短为 6 个字符'
+                        title: '密码最短为 6 个字符！',
+						duration:config.DURATION_MIDDLE
                     });
                     return;
                 }
-                if (this.email.length < 3 || !~this.email.indexOf('@')) {
-                    uni.showToast({
-                        icon: 'none',
-                        title: '邮箱地址不合法'
-                    });
-                    return;
-                }
-
-                const data = {
-                    account: this.account,
-                    password: this.password,
-                    email: this.email
-                }
-                service.addUser(data);
-                uni.showToast({
-                    title: '注册成功'
-                });
-                uni.navigateBack({
-                    delta: 1
-                });
+				if (this.passwordConfirm.length < 6) {
+				    uni.showToast({
+				        icon: 'none',
+				        title: '确认密码最短为 6 个字符！',
+						duration:config.DURATION_MIDDLE
+				    });
+				    return;
+				}
+				if (this.password!=this.passwordConfirm){
+					uni.showToast({
+					    icon: 'none',
+					    title: '两次输入的密码不一致！',
+						duration:config.DURATION_MIDDLE
+					});
+					return;
+				}
+				this.passwordEncry = md5(this.password);
+				
+				uni.showLoading({title: '正在注册...',mask:true});
+				let reqParam = {loginName : this.loginName,password : this.passwordEncry};
+				
+				uni.request({url:config.SERVER_URL+"sysUser/register.do",
+							data:reqParam,
+							dataType:'json',
+							method:'POST',
+							header: {'content-type': 'application/x-www-form-urlencoded'},
+							success: (res) => {
+								uni.hideLoading();
+								if (res.data.success){
+									// 缓存用户名、密码
+									uni.setStorage({
+										key: config.KEY_LOGIN_NAME,
+										data: this.loginName,
+										success:()=>{},
+										complete:()=>{}
+									});
+									uni.setStorage({
+										key: config.KEY_PASSWORD,
+										data: this.password,
+										success:()=> {},
+										complete:()=>{}
+									});
+									uni.setStorage({
+										key: config.KEY_PASSWORD_ENCRY,
+										data: this.passwordEncry,
+										success:()=> {},
+										complete:()=>{}
+									});
+									
+									uni.showToast({title:'注册成功！',icon:'none',duration:config.DURATION});
+									uni.navigateBack({
+									    delta: 1
+									});
+								}else{
+									uni.showToast({title:'抱歉，注册失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
+								}
+								
+								
+							},fail: (res) => {
+								uni.hideLoading();
+								uni.showToast({title:'抱歉，注册请求失败！',icon:'none',duration:config.DURATION});
+							},complete: (res) => {
+							}
+						});	
             }
         }
     }
