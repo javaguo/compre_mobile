@@ -18,6 +18,10 @@
 			<view class="text text_value" >{{remark}}</view>
 		</view>
 		<view class="uni-flex uni-row">
+			<view class="text text_label" >支出方式：</view>
+			<view class="text text_value" >{{wayText}}</view>
+		</view>
+		<view class="uni-flex uni-row">
 			<view class="text text_label" >添加时间：</view>
 			<view class="text text_value" >{{addTime}}</view>
 		</view>
@@ -48,6 +52,7 @@
 				expDate: '',
 				typeTextParent:'',
 				typeText: '',
+				wayText:'',
 				sum:'',
 				remark: '',
 				addTime:'',
@@ -71,6 +76,7 @@
 									this.expDate = res.data.bean.expDate;
 									this.typeTextParent = res.data.expendTypeNameParent;
 									this.typeText = res.data.expendTypeName;
+									this.wayText = res.data.expendWayName;
 									this.sum = res.data.bean.expSum;
 									this.remark = res.data.bean.remark;
 									this.addTime = res.data.bean.addTime;

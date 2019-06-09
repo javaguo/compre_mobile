@@ -8,9 +8,9 @@
 		<view class="com_form">
 			<form>
 				<view class="com_form_row">
-					<input class="com_form_input" placeholder-class="com_placeholder" placeholder="一级类型名称" :maxlength="typeNameMaxLength"
+					<input class="com_form_input com_form_full" placeholder-class="com_placeholder" placeholder="一级类型名称" :maxlength="typeNameMaxLength"
 					 v-model.trim="typeNameLevel1" />
-					 <input class="com_form_input" placeholder-class="com_placeholder" type="digit" 
+					 <input class="com_form_input com_form_full" placeholder-class="com_placeholder" type="digit" 
 					 	:maxlength="orderNumMaxLength" placeholder="序号"  v-model.trim="orderNumLevel1"/>
 					<button class="com_form_save" @click="clearFormLevel1">清空</button>
 					<button class="com_form_save" @click="save('level1')">保存</button>
@@ -25,14 +25,14 @@
 		<view class="com_form" >
 			<form>
 			 <view class="com_form_row">
-				 <view class="com_form_input com_form_type" :class="typeAddTipClass ? 'com_placeholder' : ''"
+				 <view class="com_form_input com_form_full" :class="typeAddTipClass ? 'com_placeholder' : ''"
 				 	  @click="selectType($event,'typeAdd')">{{typeNameLevel1Text}}</view>
 				 <mpvue-picker :themeColor="themeColor" ref="typeAddPicker" :mode="typeMode" :deepLength="typeDeepLength" 
 				 		:pickerValueDefault="typeAddSelectedIndex"  :pickerValueArray="typeValueArray"
 				 		@onConfirm="typeOnConfirm($event,'typeAdd')" @onCancel="typeOnCancel($event,'typeAdd')" >
 				 </mpvue-picker>
 				 
-			 	<input class="com_form_input" placeholder-class="com_placeholder" placeholder="二级类型名称" :maxlength="typeNameMaxLength"
+			 	<input class="com_form_input com_form_full" placeholder-class="com_placeholder" placeholder="二级类型名称" :maxlength="typeNameMaxLength"
 					v-model.trim="typeNameLevel2"/>
 			  </view>
 			  <view class="com_form_row">

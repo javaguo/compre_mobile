@@ -23,6 +23,13 @@
 					:maxlength="sumMaxLength" placeholder="金额"  v-model.trim="sumAdd"/>
 			 </view>
 			 <view class="com_form_row">
+				<view class="com_form_input com_form_way" :class="wayAddTipClass ? 'com_placeholder' : ''"
+					  @click="selectWay($event,'wayAdd')">{{wayAddText}}</view>
+				<mpvue-picker :themeColor="themeColor" ref="wayAddPicker" :mode="wayMode" :deepLength="wayDeepLength" 
+						:pickerValueDefault="wayAddSelectedIndex"  :pickerValueArray="wayValueArray"
+						@onConfirm="wayOnConfirm($event,'wayAdd')" @onCancel="wayOnCancel($event,'wayAdd')" >
+				</mpvue-picker>
+				 
 			 	<input class="com_form_input com_form_remark" placeholder-class="com_placeholder" placeholder="备注" :maxlength="remarkMaxLength"
 					v-model.trim="remark"/>
 				<button class="com_form_save" @click="clearAddForm">清空</button>
@@ -45,7 +52,7 @@
 					<view class="com_form_input com_form_date" >{{expDateEnd}}</view>
 				</picker>
 				
-				<view class="com_form_input com_form_type" :class="typeQueryTipClass ? 'com_placeholder' : ''"
+				<view class="com_form_input com_form_full" :class="typeQueryTipClass ? 'com_placeholder' : ''"
 					@click="selectType($event,'typeQuery')">{{typeQueryText}}</view>
 				<mpvue-picker :themeColor="themeColor" ref="typeQueryPicker" :mode="typeMode" :deepLength="typeDeepLength" 
 						:pickerValueDefault="typeQuerySelectedIndex"  :pickerValueArray="typeValueArray"
@@ -88,6 +95,7 @@
 					<view class="com_list_row">
 						<view class="list_text list_row2_column1">备注：</view>
 						<view class="list_text list_row2_column2 uni-ellipsis" >{{item.remark}}</view>
+						<view class="list_text list_row2_column3">{{item.fkExpendWayId}}</view>
 						<view class="list_icon">
 							<image class="list-icon_img" src="../../../static/img/common/editor32.png" @click="editData($event,item)"></image>
 						</view>
@@ -127,6 +135,7 @@
 			const startDate = this.getDate('start');
 			const endDate = this.getDate('end');
 			const constTypeTip = "支出类型";// 只在下面的return块里使用
+			const constWayTip = "支出方式";
 			const constSumMinVal = 0;
 			const constSumMaxVal = 100000000;
             return {
@@ -148,6 +157,15 @@
 				typeQueryText: constTypeTip,
 				typeQueryValue: '',
 				typeQueryTipClass:true,
+				// 支出方式属性
+				wayValueArray: [],
+				wayMode: 'selector',
+				wayDeepLength: 1,
+				wayTip:constWayTip,
+				wayAddSelectedIndex: [0],
+				wayAddText: constWayTip,
+				wayAddValue: '',
+				wayAddTipClass:true,
 				// 金额相关
 				sumMaxLength:11,
 				sumMinVal:constSumMinVal,
@@ -319,12 +337,15 @@
 									icon:'none',duration:config.DURATION_MIDDLE});
 					return;
 				}
+				if ( this.wayAddValue==undefined || this.wayAddValue==null ){
+					this.wayAddValue = "";
+				}
 				
 				uni.showLoading({title: '正在保存...',mask:true});
 				let tempURL = '';
 				let opeTypeTip = '';
 				let reqParam = {loginName : this.loginName,token : this.token,
-									expDate:this.expDate,fkExpendTypeId:this.typeAddValue,
+									expDate:this.expDate,fkExpendTypeId:this.typeAddValue,fkExpendWayId:this.wayAddValue,
 									expSum:this.sumAdd,remark:this.remark};
 				if (this.beanId!=null && this.beanId!=''){// 编辑
 					tempURL = config.SERVER_URL+"m/expend/update.do";	
@@ -373,6 +394,15 @@
 									this.typeAddValue = res.data.bean.fkExpendTypeId;
 									this.typeAddText = res.data.expendTypeName;
 									this.typeAddTipClass = false;
+									this.wayAddValue = res.data.bean.fkExpendWayId;
+									if ( this.wayAddValue!=undefined && this.wayAddValue!=null && this.wayAddValue!='' ){
+										this.wayAddText = res.data.expendWayName;
+										// this.wayAddText = this.getWayLableById( this.wayAddValue );
+										this.wayAddTipClass = false;
+									}else{
+										this.wayAddText = this.wayTip;
+										this.wayAddTipClass = true;
+									}
 									this.sumAdd = res.data.bean.expSum;
 									this.remark = res.data.bean.remark;
 								}else{
@@ -388,6 +418,7 @@
 			clearAddForm(){// 清空添加区域表单
 			    this.beanId = '';
 				this.clearType("typeAdd");
+				this.clearWay("wayAdd");
 				this.sumAdd='';
 				this.remark='';
 			},
@@ -539,6 +570,73 @@
 					this.typeQueryTipClass = true;
 				}
 			},
+			// 支出方式
+			loadWay(){
+				let d = new Date();
+				let reqURL = config.SERVER_URL+"m/expend/loadComboxData.do?cascChild=false&comboBoxFlag=expendWay&value=";
+				uni.request({url:reqURL,
+							data:{loginName : this.loginName,token : this.token,t: d.getTime()},
+							dataType:'json',
+							method:'POST',
+							header: {'content-type': 'application/x-www-form-urlencoded'},
+							success: (res) => {
+								if (res.data!=null && res.data!=undefined){
+									// console.log( JSON.stringify(res) );
+									if (res.statusCode==200){
+										this.wayValueArray = res.data.comboboxData;
+									}
+								}else{
+									uni.showToast({title:'加载支出方式失败！'+res.data.msg,icon:'none',duration:config.DURATION_MIDDLE});
+								}
+							},fail: (res) => {
+								uni.showToast({title:'加载支出方式失败！',icon:'none',duration:config.DURATION});
+							},complete: (res) => {
+							}
+					});
+			},
+			selectWay(e,ref) {// 支出方式框点击事件
+				uni.hideKeyboard();
+				if (this.wayValueArray==undefined || this.wayValueArray==null || this.wayValueArray.length==0){
+					uni.showToast({title:'没有支出方式！',icon:'none',duration:config.DURATION_LONG});
+					return;
+				}
+				if ("wayAdd"==ref){
+					this.$refs.wayAddPicker.show();
+				}
+			},
+			wayOnConfirm(e,elementId) {// 支出方式确定事件
+				let selectedObj = this.wayValueArray[e.index[0]];
+				let selectedVal = selectedObj.value;
+				let selectedLabel = selectedObj.label;
+				
+				if ("wayAdd"==elementId){
+					this.wayAddValue = selectedVal;
+					this.wayAddText = selectedLabel;
+					this.wayAddTipClass = false;
+				}
+			},
+			wayOnCancel(e,elementId) {// 支出类型取消事件
+				this.clearWay(elementId);
+			},
+			getWayLableById(id) {// 根据支出方式id取支出方式名称
+				if (this.wayValueArray==undefined || this.wayValueArray==null || this.wayValueArray.length==0){
+					return '';
+				}
+				for(var i=0;i<this.wayValueArray.length;i++){
+					let selectedObj = this.wayValueArray[i];
+					if (selectedObj.value==id){
+						return selectedObj.label;
+					}
+				}
+				return '';
+			},
+			clearWay(type){// 清空支出类型的值
+				if ("wayAdd"==type){
+					this.wayAddValue = '';
+					this.wayAddText = this.wayTip;
+					this.wayAddTipClass = true;
+				}
+			},
 			sumBlur(e,eleId){// 金额失去焦点
 			}
 		},
@@ -551,6 +649,10 @@
 				this.$refs.typeQueryPicker.pickerCancel();
 				return true;
 			}
+			if (this.$refs.wayAddPicker.showPicker) {
+				this.$refs.wayAddPicker.pickerCancel();
+				return true;
+			}
 		},
 		onUnload() {
 			if (this.$refs.typeAddPicker.showPicker) {
@@ -558,6 +660,9 @@
 			}
 			if (this.$refs.typeQueryPicker.showPicker) {
 				this.$refs.typeQueryPicker.pickerCancel();
+			}
+			if (this.$refs.wayAddPicker.showPicker) {
+				this.$refs.wayAddPicker.pickerCancel();
 			}
 		},
         onLoad() {
@@ -568,6 +673,7 @@
 				appCommon.toLoginPage();
 			}else{
 				this.loadType();// 加载支出类型
+				this.loadWay();// 加载支出方式
 			}
 			
 			if (this.hasLogin && !this.list.hasLoadedData) {

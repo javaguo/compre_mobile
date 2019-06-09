@@ -45,7 +45,7 @@
 					<view class="com_form_input com_form_date" >{{recDateEnd}}</view>
 				</picker>
 				
-				<view class="com_form_input com_form_type" :class="typeQueryTipClass ? 'com_placeholder' : ''"
+				<view class="com_form_input com_form_full" :class="typeQueryTipClass ? 'com_placeholder' : ''"
 					@click="selectType($event,'typeQuery')">{{typeQueryText}}</view>
 				<mpvue-picker :themeColor="themeColor" ref="typeQueryPicker" :mode="typeMode" :deepLength="typeDeepLength" 
 						:pickerValueDefault="typeQuerySelectedIndex"  :pickerValueArray="typeValueArray"
@@ -87,7 +87,7 @@
 					</view>
 					<view class="com_list_row">
 						<view class="list_text list_row2_column1">备注：</view>
-						<view class="list_text list_row2_column2 uni-ellipsis" >{{item.remark}}</view>
+						<view class="list_text list_row2_column2 uni-ellipsis com_form_full" >{{item.remark}}</view>
 						<view class="list_icon">
 							<image class="list-icon_img" src="../../../static/img/common/editor32.png" @click="editData($event,item)"></image>
 						</view>

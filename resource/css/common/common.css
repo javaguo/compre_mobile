@@ -123,6 +123,11 @@
 }
 
 .list_row2_column2{
+	width: 280upx;
+	color: #8a8a8a;
+}
+
+.list_row2_column3{
 	display: flex;
 	flex: 1;
 	color: #8a8a8a;
@@ -180,7 +185,6 @@
 	line-height:55upx;
 	font-size:35upx;
 	background:#FEFEFE;
-	flex: 1;
 	margin: 5upx 10upx 0upx 0upx;
 	/* border-bottom-style: solid;
 	border-bottom-width: 2upx;
@@ -195,19 +199,23 @@
 }
 
 .com_form_type{
-	width: 180upx;
+	width: 200upx;
+}
+
+.com_form_way{
+	width: 200upx;
 }
 
 .com_form_sum{
-	flex: 1;
 	border-right-width: 0upx;
 }
 
 .com_form_sum_q{
-	width: 200upx;
+	width: 150upx;
 }
 
 .com_form_remark{
+	flex: 1;
 	border-right-width: 0upx;
 }
 

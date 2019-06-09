@@ -40,7 +40,7 @@
                 password: '',
 				passwordConfirm:'',
 				passwordEncry:'',
-				loginNameMaxLength:25,
+				loginNameMaxLength:16,
 				passwordMaxLength:25
             }
         },
@@ -54,6 +54,17 @@
                     });
                     return;
                 }
+				
+				let regx = /^[a-zA-Z][a-zA-Z0-9_]{2,15}$/;
+				if (!regx.test(this.loginName)){
+					uni.showToast({
+					    icon: 'none',
+					    title: '账号不合法，正确格式为：字母开头，长度在3~16之间，允许字母数字下划线！',
+						duration:config.DURATION_LONG
+					});
+					return;
+				}
+				
                 if (this.password.length < 6) {
                     uni.showToast({
                         icon: 'none',
