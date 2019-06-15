@@ -194,10 +194,17 @@
 			 * 统计列表总和
 			 */
 			statisticSum(){
+				let fkReceiptsTypeId = this.typeQueryValue;
+				let typeIds = '';
+				if (fkReceiptsTypeId.startsWith("second_all_")){
+					typeIds = this.getAllSecondChildIds(fkReceiptsTypeId.replace("second_all_",""));
+					fkReceiptsTypeId = '';
+				}
+				
 				let reqURL = config.SERVER_URL+"m/receipts/statisticSum.do";
 				uni.request({url:reqURL,
 							data:{loginName : this.loginName,token : this.token,
-								  recDateStart:this.recDateStart,recDateEnd:this.recDateEnd,fkReceiptsTypeId:this.typeQueryValue,
+								  recDateStart:this.recDateStart,recDateEnd:this.recDateEnd,fkReceiptsTypeId:fkReceiptsTypeId,typeIds:typeIds,
 								  expSumStart:this.sumStart,expSumEnd:this.sumEnd,remark:this.remarkQuery},
 							dataType:'json',
 							method:'POST',
@@ -246,13 +253,19 @@
 				if ("query"==opeType){// 只有点击查询时执行统计
 					this.statisticSum();
 				}
+				let fkReceiptsTypeId = this.typeQueryValue;
+				let typeIds = '';
+				if (fkReceiptsTypeId.startsWith("second_all_")){
+					typeIds = this.getAllSecondChildIds(fkReceiptsTypeId.replace("second_all_",""));
+					fkReceiptsTypeId = '';
+				}
 				
 				// 加载列表
 				uni.showLoading({title: '加载中...',mask:true});
 				let reqURL = config.SERVER_URL+"m/receipts/searchData.do";
 				uni.request({url:reqURL,
 							data:{loginName : this.loginName,token : this.token,page:this.page,limit:config.PAGE_SIZE,
-								  recDateStart:this.recDateStart,recDateEnd:this.recDateEnd,fkReceiptsTypeId:this.typeQueryValue,
+								  recDateStart:this.recDateStart,recDateEnd:this.recDateEnd,fkReceiptsTypeId:fkReceiptsTypeId,typeIds:typeIds,
 								  expSumStart:this.sumStart,expSumEnd:this.sumEnd,remark:this.remarkQuery},
 							dataType:'json',
 							method:'POST',
@@ -504,8 +517,24 @@
 					return;
 				}
 				if ("typeAdd"==ref){
+					for(let i=0;i<this.typeValueArray.length;i++){
+						let parentId = this.typeValueArray[i].value;
+						let secondAllValue = "second_all_"+parentId;
+						if (secondAllValue==this.typeValueArray[i].children[0].value){
+							this.typeValueArray[i].children.shift();
+						}
+					}
 					this.$refs.typeAddPicker.show();
 				}else if ("typeQuery"==ref){
+					for(let i=0;i<this.typeValueArray.length;i++){
+						let parentId = this.typeValueArray[i].value;
+						let label = this.typeValueArray[i].label;
+						let secondAllValue = "second_all_"+parentId;
+						if (secondAllValue!=this.typeValueArray[i].children[0].value){
+							let secodNode = {value:secondAllValue,label:label+'-全部',parentId:parentId};
+							this.typeValueArray[i].children.unshift(secodNode);
+						}
+					}
 					this.$refs.typeQueryPicker.show();
 				}
 			},
@@ -537,6 +566,29 @@
 					this.typeQueryText = this.typeTip;
 					this.typeQueryTipClass = true;
 				}
+			},
+			getAllSecondChildIds(firstLevelId){
+				let typeIds = "";
+				if (this.typeValueArray==undefined || this.typeValueArray==null || this.typeValueArray.length==0){
+					return typeIds;
+				}
+				
+				for(let i=0;i<this.typeValueArray.length;i++){
+					let parentId = this.typeValueArray[i].value;
+					let secondType = this.typeValueArray[i].children;
+					if (parentId==firstLevelId && secondType.length>0){
+						for (let j=0;j<secondType.length;j++){
+							let secondValue = secondType[j].value;
+							if (secondValue.startsWith("second_all_")){
+								typeIds = typeIds+","+secondValue.replace("second_all_","");
+							}else{
+								typeIds = typeIds+","+secondValue;
+							}
+							
+						}
+					}
+				}
+				return typeIds;
 			},
 			sumBlur(e,eleId){// 金额失去焦点
 			}

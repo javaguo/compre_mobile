@@ -212,10 +212,17 @@
 			 * 统计列表总和
 			 */
 			statisticSum(){
+				let fkExpendTypeId = this.typeQueryValue;
+				let typeIds = '';
+				if (fkExpendTypeId.startsWith("second_all_")){
+					typeIds = this.getAllSecondChildIds(fkExpendTypeId.replace("second_all_",""));
+					fkExpendTypeId = '';
+				}
+				
 				let reqURL = config.SERVER_URL+"m/expend/statisticSum.do";
 				uni.request({url:reqURL,
 							data:{loginName : this.loginName,token : this.token,
-								  expDateStart:this.expDateStart,expDateEnd:this.expDateEnd,fkExpendTypeId:this.typeQueryValue,
+								  expDateStart:this.expDateStart,expDateEnd:this.expDateEnd,fkExpendTypeId:fkExpendTypeId,typeIds:typeIds,
 								  expSumStart:this.sumStart,expSumEnd:this.sumEnd,remark:this.remarkQuery},
 							dataType:'json',
 							method:'POST',
@@ -265,12 +272,19 @@
 					this.statisticSum();
 				}
 				
+				let fkExpendTypeId = this.typeQueryValue;
+				let typeIds = '';
+				if (fkExpendTypeId.startsWith("second_all_")){
+					typeIds = this.getAllSecondChildIds(fkExpendTypeId.replace("second_all_",""));
+					fkExpendTypeId = '';
+				}
+				
 				// 加载列表
 				uni.showLoading({title: '加载中...',mask:true});
 				let reqURL = config.SERVER_URL+"m/expend/searchData.do";
 				uni.request({url:reqURL,
 							data:{loginName : this.loginName,token : this.token,page:this.page,limit:config.PAGE_SIZE,
-								  expDateStart:this.expDateStart,expDateEnd:this.expDateEnd,fkExpendTypeId:this.typeQueryValue,
+								  expDateStart:this.expDateStart,expDateEnd:this.expDateEnd,fkExpendTypeId:fkExpendTypeId,typeIds:typeIds,
 								  expSumStart:this.sumStart,expSumEnd:this.sumEnd,remark:this.remarkQuery},
 							dataType:'json',
 							method:'POST',
@@ -535,9 +549,24 @@
 					return;
 				}
 				if ("typeAdd"==ref){
+					for(let i=0;i<this.typeValueArray.length;i++){
+						let parentId = this.typeValueArray[i].value;
+						let secondAllValue = "second_all_"+parentId;
+						if (secondAllValue==this.typeValueArray[i].children[0].value){
+							this.typeValueArray[i].children.shift();
+						}
+					}
 					this.$refs.typeAddPicker.show();
-					
 				}else if ("typeQuery"==ref){
+					for(let i=0;i<this.typeValueArray.length;i++){
+						let parentId = this.typeValueArray[i].value;
+						let label = this.typeValueArray[i].label;
+						let secondAllValue = "second_all_"+parentId;
+						if (secondAllValue!=this.typeValueArray[i].children[0].value){
+							let secodNode = {value:secondAllValue,label:label+'-全部',parentId:parentId};
+							this.typeValueArray[i].children.unshift(secodNode);
+						}
+					}
 					this.$refs.typeQueryPicker.show();
 				}
 			},
@@ -570,6 +599,29 @@
 					this.typeQueryTipClass = true;
 				}
 			},
+			getAllSecondChildIds(firstLevelId){
+				let typeIds = "";
+				if (this.typeValueArray==undefined || this.typeValueArray==null || this.typeValueArray.length==0){
+					return typeIds;
+				}
+				
+				for(let i=0;i<this.typeValueArray.length;i++){
+					let parentId = this.typeValueArray[i].value;
+					let secondType = this.typeValueArray[i].children;
+					if (parentId==firstLevelId && secondType.length>0){
+						for (let j=0;j<secondType.length;j++){
+							let secondValue = secondType[j].value;
+							if (secondValue.startsWith("second_all_")){
+								typeIds = typeIds+","+secondValue.replace("second_all_","");
+							}else{
+								typeIds = typeIds+","+secondValue;
+							}
+							
+						}
+					}
+				}
+				return typeIds;
+			},
 			// 支出方式
 			loadWay(){
 				let d = new Date();
@@ -581,7 +633,6 @@
 							header: {'content-type': 'application/x-www-form-urlencoded'},
 							success: (res) => {
 								if (res.data!=null && res.data!=undefined){
-									// console.log( JSON.stringify(res) );
 									if (res.statusCode==200){
 										this.wayValueArray = res.data.comboboxData;
 									}
@@ -615,7 +666,7 @@
 					this.wayAddTipClass = false;
 				}
 			},
-			wayOnCancel(e,elementId) {// 支出类型取消事件
+			wayOnCancel(e,elementId) {// 支出方式取消事件
 				this.clearWay(elementId);
 			},
 			getWayLableById(id) {// 根据支出方式id取支出方式名称
@@ -630,7 +681,7 @@
 				}
 				return '';
 			},
-			clearWay(type){// 清空支出类型的值
+			clearWay(type){// 清空支出方式的值
 				if ("wayAdd"==type){
 					this.wayAddValue = '';
 					this.wayAddText = this.wayTip;
